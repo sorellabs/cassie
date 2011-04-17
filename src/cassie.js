@@ -241,7 +241,8 @@ function (root) {
         // The promise fails with the value of ``timeouted``.
         //
         function timeout(delay) {
-            this.timer = setTimeout( function(){ this.fail(timeouted) }
+            var promise = this
+            this.timer = setTimeout( function(){ promise.fail(timeouted) }
                                    , delay * 1000)
             return this
         }
