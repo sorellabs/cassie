@@ -135,7 +135,7 @@ function (root) {
         // error, since a promise can only be resolved once.
         //
         function resolve(promise, value) {
-            if (this.value) throw EFulfilled
+            if (promise.value) throw EFulfilled
             return promise.value = slice.call(value)
         }
 
