@@ -84,7 +84,7 @@ function (root) {
         this.defaultev = 'done'
     }
     Promise.prototype = function() {
-        return { when:        when
+        return { add:         add
                , flush:       flush
                , done:        done
                , bind:        bind
@@ -93,7 +93,7 @@ function (root) {
                , clear_timer: clear_timer
                , forget:      forget
 
-               // Shortcuts for when(event[, callback])
+               // Shortcuts for add(event[, callback])
                , ok:          ok
                , failed:      failed
                , timeouted:   _timeouted
@@ -140,17 +140,20 @@ function (root) {
         }
 
 
-        ////// Method when /////////////////////////////////////////////////////
+        ////// Method add //////////////////////////////////////////////////////
         // ::
-        //     when(Str event, Fn callback) → Promise
+        //     add(Str event[, Fn callback]) → Promise
         //
         // Adds a callback to the ``Promise``.
         //
         // See :fn:`add_callback` for more information.
         //
-        function when(event, callback) {
-            if (arguments.length > 1) this.defaultev = event
-            else                      event          = this.defaultev
+        function add(event, callback) {
+            if (arguments.length > 1)
+                this.defaultev = event
+            else {
+                callback = event
+                event    = this.defaultev }
 
             if (this.value && callback) callback.apply(this, this.value)
             else                        add_callback(this, event, callback)
@@ -266,11 +269,11 @@ function (root) {
         }
 
 
-        ////// -Shortcuts for when(event[, callback]) //////////////////////////
-        function ok(fn)         { return when('ok',      fn) }
-        function failed(fn)     { return when('fail',    fn) }
-        function _timeouted(fn) { return when('timeout', fn) }
-        function _forgotten(fn) { return when('forget',  fn) }
+        ////// -Shortcuts for add(event[, callback]) //////////////////////////
+        function ok(fn)         { return add('ok',      fn) }
+        function failed(fn)     { return add('fail',    fn) }
+        function _timeouted(fn) { return add('timeout', fn) }
+        function _forgotten(fn) { return add('forget',  fn) }
     }()
 
 
