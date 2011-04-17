@@ -147,6 +147,24 @@ function (root) {
         //
         // Adds a callback to the ``Promise``.
         //
+        // Passing a callback directly to the add method is optional, to
+        // leverage more specialized promises, Cassie supports defining
+        // a default event to which callbacks are bound.
+        // 
+        // For example, instead of writting the following::
+        // 
+        //     promise.add('ok', foo).add('ok', bar)
+        // 
+        // You could go with::
+        // 
+        //     promise.add('ok').foo().bar()
+        // 
+        // Of course, given you have a specialized promise implementing
+        // `foo` and `bar`.
+        // 
+        // The default event persists until another `add` call with an
+        // explicit event is issued.
+        // 
         // See :fn:`add_callback` for more information.
         //
         function add(event, callback) {
