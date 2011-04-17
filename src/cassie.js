@@ -242,8 +242,10 @@ function (root) {
         //
         function timeout(delay) {
             var promise = this
-            this.timer = setTimeout( function(){ promise.fail(timeouted) }
-                                   , delay * 1000)
+            this.timer = setTimeout(function(){
+                promise.fail(timeouted)
+                promise.flush('timeouted')
+            }, delay * 1000)
             return this
         }
 
@@ -268,14 +270,15 @@ function (root) {
         //
         function forget() {
             this.fail(forgotten)
+            return this.flush('forgotten')
         }
 
 
         ////// -Shortcuts for add(event[, callback]) //////////////////////////
-        function ok(fn)         { return this.add('ok',      fn) }
-        function failed(fn)     { return this.add('fail',    fn) }
-        function _timeouted(fn) { return this.add('timeout', fn) }
-        function _forgotten(fn) { return this.add('forget',  fn) }
+        function ok(fn)         { return this.add('ok',        fn) }
+        function failed(fn)     { return this.add('fail',      fn) }
+        function _timeouted(fn) { return this.add('timeouted', fn) }
+        function _forgotten(fn) { return this.add('forgotten', fn) }
     }()
 
 
