@@ -136,6 +136,7 @@ function (root) {
         //
         function resolve(promise, value) {
             if (promise.value) throw EFulfilled
+            promise.clear_timer()
             return promise.value = slice.call(value)
         }
 
