@@ -270,10 +270,10 @@ function (root) {
 
 
         ////// -Shortcuts for add(event[, callback]) //////////////////////////
-        function ok(fn)         { return add('ok',      fn) }
-        function failed(fn)     { return add('fail',    fn) }
-        function _timeouted(fn) { return add('timeout', fn) }
-        function _forgotten(fn) { return add('forget',  fn) }
+        function ok(fn)         { return this.add('ok',      fn) }
+        function failed(fn)     { return this.add('fail',    fn) }
+        function _timeouted(fn) { return this.add('timeout', fn) }
+        function _forgotten(fn) { return this.add('forget',  fn) }
     }()
 
 
