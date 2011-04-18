@@ -48,14 +48,18 @@
 
 '@cassie',
 function (root) {
-    __old_cassie = root.cassie
-    if (typeof exports == 'undefined')
-        mod = root.cassie = root.cassie || {}
+    if (typeof exports == 'undefined') {
+        old    = root.cassie
+        cassie = root.cassie = root.cassie || {}
+        cassie.clean = function() {
+            root.cassie = old
+            return cassie
+        }}
     else
-        mod = exports
+        cassie = exports
 
 
-    var mod, __old_cassie
+    var cassie, old
       , slice = Array.prototype.slice
 
       // Constants with values for errors
@@ -65,22 +69,6 @@ function (root) {
       // Error objects
       , EFulfilled   = new Error('Promise already fulfilled.')
       , EUnfulfilled = new Error('Promise not fulfilled.')
-
-
-
-    ////// ~Method clean ///////////////////////////////////////////////////////
-    // ::
-    //     clean() → Obj cassie
-    // 
-    // Gives back control of the global `cassie' property to the value
-    // it had before the module has been required/executed.
-    //
-    // Returns the main cassie object.
-    //
-    mod.clean = function () {
-        root.cassie = __old_cassie
-        return mod
-    }
 
 
 
@@ -318,9 +306,9 @@ function (root) {
 
 
     ///// Exṕorts //////////////////////////////////////////////////////////////
-    mod.Promise      = Promise
-    mod.forgotten    = forgotten
-    mod.timeouted    = timeouted
-    mod.EFulfilled   = EFulfilled
-    mod.EUnfulfilled = EUnfulfilled
+    cassie.Promise      = Promise
+    cassie.forgotten    = forgotten
+    cassie.timeouted    = timeouted
+    cassie.EFulfilled   = EFulfilled
+    cassie.EUnfulfilled = EUnfulfilled
 }(this)
