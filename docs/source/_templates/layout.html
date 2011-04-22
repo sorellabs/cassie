@@ -1,0 +1,22 @@
+{% extends "basic/layout.html" %}
+{%- block doctype -%}
+    <!DOCTYPE html>
+{%- endblock %}
+
+{%- block extrahead %}
+<link href="{{ pathto('_static/jello.css', 1) }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{%- block relbar1 %}{% endblock %}
+{%- block relbar2 %}{% endblock %}
+
+{%- block document %}
+    <div class="main-header">
+        <h1><a href="{{ pathto(master_doc) }}">{{ project }}</a></h1>
+        <em>{{ shorttitle|e }}</em>
+    </div>
+    <div class="rel">
+        {{ relbar() }}
+    </div>
+    {{ super() }}
+{% endblock %}
