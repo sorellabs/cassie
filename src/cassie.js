@@ -66,10 +66,6 @@ function (root) {
       , forgotten = {}
       , timeouted = {}
 
-      // Error objects
-      , EFulfilled   = new Error('Promise already fulfilled.')
-      , EUnfulfilled = new Error('Promise not fulfilled.')
-
 
 
     ///// Object Promise ///////////////////////////////////////////////////////
