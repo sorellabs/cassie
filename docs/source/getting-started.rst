@@ -135,7 +135,8 @@ successfully honoured, and sometimes this may not be the case.
    alert to some function that outputs text. It may be ``console.log``
    (like in Node.js) or ``print`` (like Rhino).
 
-   So whenever you see alert, just replace by one of these functions.
+   So whenever you see alert, just replace it by one of these
+   functions.
 
 
 What if shit happens?
