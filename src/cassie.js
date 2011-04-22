@@ -121,13 +121,14 @@ function (root) {
         // Returns the given callback function.
         //
         function add_callback(promise, event, callback) {
-            if (!promise.callbacks[event])
-                promise.callbacks[event] = []
-
-            promise.callbacks[event].push(callback)
+            get_queue(promise, event).push(callback)
             return callback
         }
 
+        function get_queue(promise, event) {
+            return promise.callbacks[event]
+                || (promise.callbacks[event] = [])
+        }
 
 
         ////// Method add //////////////////////////////////////////////////////
@@ -157,16 +158,26 @@ function (root) {
         // See :fn:`add_callback` for more information.
         //
         function add(event, callback) {
-            if (arguments.length > 1)
-                this.defaultev = event
-            else {
+            if (typeof event == 'function') {
                 callback = event
                 event    = this.defaultev }
 
-            if (this.value && callback) callback.apply(this, this.value)
-            else                        add_callback(this, event, callback)
-
+            _add(this, event, callback)
             return this
+        }
+
+        function _add(promise, event, callback) {
+            promise.defaultev = event
+            if (promise.value)
+                fire(promise, event, callback)
+            else
+                add_callback(promise, event, callback)
+        }
+
+        function fire(promise, event, callback) {
+            var queue = get_queue(promise, event)
+            if (callback && queue.flushed)
+                return callback.apply(promise, promise.value)
         }
 
 
@@ -182,7 +193,8 @@ function (root) {
         // the promise when it was fulfilled.
         //
         function flush(event) {
-            if (!this.value) this.flush_queue.push(event)
+            if (!this.value)
+                this.flush_queue.push(event)
             else while (event = this.flush_queue.shift())
                 flush_ev(this, event) 
 
@@ -195,6 +207,8 @@ function (root) {
 
             while (current = callbacks.shift())
                 current.apply(promise, promise.value)
+
+            callbacks.flushed = true
         }
             
 
