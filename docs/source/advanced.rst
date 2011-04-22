@@ -154,9 +154,9 @@ list of arguments that will be passed to all functions waiting for it
            .bind(1, 2, 3) // alerts 6
 
 
-A promise may be resolved at most once, otherwise it'll throw an
-error. This is so we don't have promises succeding and then magically
-failing as well.
+A promise may be resolved at most once, successive resolutions of a
+promise will be just ignored. This is so we don't have promises
+succeding and then magically failing as well.
 
 When a promise is resolved, it can only succeed or fail. If a promise
 succeeds, all callbacks waiting for the ``ok`` status are called,
