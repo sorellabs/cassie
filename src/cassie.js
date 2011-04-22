@@ -121,29 +121,13 @@ function (root) {
         // Returns the given callback function.
         //
         function add_callback(promise, event, callback) {
-            if (!promise.callbacks[event]) promise.callbacks[event] = []
+            if (!promise.callbacks[event])
+                promise.callbacks[event] = []
+
             promise.callbacks[event].push(callback)
             return callback
         }
 
-
-        ////// Function resolve ////////////////////////////////////////////////
-        // ::
-        //     resolve(Obj promise, ArrayLike value) → ArrayLike
-        //
-        // Resolves the value of the given promise.
-        //
-        // The given value array is cloned, then assigned to the
-        // promise. This makes it easier for caller functions to just
-        // pass the ``arguments`` object straight up to this function.
-        //
-        // If the promise's value has already been resolved, we throw an
-        // error, since a promise can only be resolved once.
-        //
-        function resolve(promise, value) {
-            promise.clear_timer()
-            return promise.value = slice.call(value)
-        }
 
 
         ////// Method add //////////////////////////////////////////////////////
@@ -222,8 +206,12 @@ function (root) {
         // Resolves the promise to the given values and call the
         // callbacks defined for ``done``.
         //
-        // See :fn:`resolve` for more information on how all this stuff
-        // is resolved.
+        // The given value array is cloned, then assigned to the
+        // promise. This makes it easier for caller functions to just
+        // pass the ``arguments`` object straight up to this function.
+        //
+        // If the promise has already been resolved, this method is a
+        // noop.
         //
         function done(values) {
             if (!this.value) {
