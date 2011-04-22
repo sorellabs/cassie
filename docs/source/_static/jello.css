@@ -2,6 +2,7 @@ body {
     background-color: #f3f3f3;
     border-top: 10px solid #952B47;
     font-family: 'Trebuchet MS', sans-serif;
+    padding-top: 150px;
 }
 
 div.document {
@@ -16,7 +17,15 @@ div.main-header {
     font-family: Georgia, "Times New Roman", serif;
     font-size: 24px;
     font-variant: small-caps;
-    margin-bottom: -40px;
+    position: fixed;
+    top: 10px;
+}
+div.main-header, .rel {
+    position: fixed;
+    width: 900px;
+}
+.rel {
+    top: 140px;
 }
 div.main-header a {
     color: #952B47;
