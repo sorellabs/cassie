@@ -1,5 +1,5 @@
-Cassie v|release| documentation
-===============================
+Meet Cassie
+===========
 
 Cassie (short for lil' Cassandra) is a deliciously short `Future`_
 library for JavaScript. It provides a simple ``Promise`` object that can
