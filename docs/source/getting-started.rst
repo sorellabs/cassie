@@ -1,7 +1,7 @@
 Getting Started
 ===============
 
-This page it's meant as a really quick'n'dirty introduction to
+This page is meant as a really quick'n'dirty introduction to
 Cassie. It'll walk you through the basics to get it up and running — to
 take advantage of all its awesomeness, be sure to :doc:`peer into the
 depths <advanced>`.
@@ -47,8 +47,8 @@ Node.js), even easier: just ``require`` it::
 .. _This will also ensure that your pages load faster: http://developer.yahoo.com/performance/rules.html#js_bottom
 
 
-Using it
---------
+Basic Usage
+-----------
 
 Now that you have your scripts in place, you can have a sneaky-peak in
 the awesomeness. Let's see how you can bend your asynchronous calls in
@@ -171,6 +171,11 @@ as forgetting your promises::
                 if (why === cassie.timeouted)
                     alert("Oh shit, can't wait anymoar") })
             .timeout(2)
+
+
+.. note::
+   Cassie provides the functions ``timeouted`` and ``forgotten`` as more
+   specialised kinds of ``failed`` callbacks.
 
 
 Where to go from here?
