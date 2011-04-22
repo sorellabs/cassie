@@ -1,5 +1,5 @@
-Howdy, there!
-=============
+Cassie v|release| documentation
+===============================
 
 Cassie (short for lil' Cassandra) is a deliciously short `Future`_
 library for JavaScript. It provides a simple ``Promise`` object that can
@@ -16,6 +16,7 @@ In short: **It helps you write readable code!**
 
    overview
    getting-started
+   advanced
 
 
 Indices and tables
