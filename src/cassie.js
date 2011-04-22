@@ -83,10 +83,11 @@ function (root) {
     // adding your own custom methods.
     //
     function Promise () {
-        this.callbacks = {}
-        this.value     = null
-        this.timer     = null
-        this.defaultev = 'done'
+        this.callbacks   = {}
+        this.flush_queue = []
+        this.value       = null
+        this.timer       = null
+        this.defaultev   = 'done'
     }
     Promise.prototype = function() {
         return { add:         add
@@ -140,7 +141,6 @@ function (root) {
         // error, since a promise can only be resolved once.
         //
         function resolve(promise, value) {
-            if (promise.value) throw EFulfilled
             promise.clear_timer()
             return promise.value = slice.call(value)
         }
@@ -198,31 +198,39 @@ function (root) {
         // the promise when it was fulfilled.
         //
         function flush(event) {
-            var callbacks = this.callbacks[event] || []
-              , current
-
-            if (this.value === null) throw EUnfulfilled
-            while (current = callbacks.shift())
-                current.apply(this, this.value)
+            if (!this.value) this.flush_queue.push(event)
+            else while (event = this.flush_queue.shift())
+                flush_ev(this, event) 
 
             return this
         }
 
+        function flush_ev(promise, event) {
+            var callbacks = promise.callbacks[event] || []
+              , current
+
+            while (current = callbacks.shift())
+                current.apply(promise, promise.value)
+        }
+            
+
 
         ////// Method done /////////////////////////////////////////////////////
         // ::
-        //     done(Str status, ArrayLike values) → Promise
+        //     done(ArrayLike values) → Promise
         //
-        // Resolves the promise to the given values and call both the
-        // callbacks defined for the ``status`` to which the promise has
-        // been resolved, and the ``done`` callbacks.
+        // Resolves the promise to the given values and call the
+        // callbacks defined for ``done``.
         //
         // See :fn:`resolve` for more information on how all this stuff
         // is resolved.
         //
-        function done(status, values) {
-            resolve(this, values)
-            return this.flush(status).flush('done')
+        function done(values) {
+            if (!this.value) {
+                this.clear_timer().flush('done')
+                this.value = slice.call(values)
+                this.flush() }
+            return this
         }
 
 
@@ -236,7 +244,7 @@ function (root) {
         // See :fn:`done` for more information.
         //
         function fail() {
-            return this.done('fail', arguments)
+            return this.flush('fail').done(arguments)
         }
 
 
@@ -250,7 +258,7 @@ function (root) {
         // See :fn:`resolve` for more information.
         //
         function bind() {
-            return this.done('ok', arguments)
+            return this.flush('ok').done(arguments)
         }
 
 
@@ -266,8 +274,8 @@ function (root) {
         function timeout(delay) {
             var promise = this
             this.timer = setTimeout(function(){
-                promise.fail(timeouted)
                 promise.flush('timeouted')
+                       .fail(timeouted)
             }, delay * 1000)
             return this
         }
@@ -292,8 +300,7 @@ function (root) {
         // Cancels the promise, and fails with the value of ``forgotten``.
         //
         function forget() {
-            this.fail(forgotten)
-            return this.flush('forgotten')
+            return this.flush('forgotten').fail(forgotten)
         }
 
 
