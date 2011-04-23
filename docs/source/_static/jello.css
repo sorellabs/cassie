@@ -104,15 +104,42 @@ div.body p {
     margin: 1.5em 0;
     text-align: left;
 }
+
+dl.function, dl.method, dl.class, dl.attribute {
+    border-top: 3px solid #ddd;
+    padding-top: 5px;
+}
 div.body dl.function li,
+div.body dl.method li,
+div.body dl.attribute li,
 div.body dl.class li {
     margin-bottom: 1em;
     list-style: none;
 }
 dl.function dt,
+dl.method dt
 dl.class dt,
+dl.attribute dt,
 tt.descname {
     color: #777;
+    margin-bottom: -10px;
+}
+.field-name {
+    text-align: right;
+    background: none;
+    color: #333;
+}
+.field-body ul {
+    list-style: none;
+}
+.field-body {
+    color: #999;
+}
+.field-body li {
+    margin-bottom: 1em;
+}
+.field-body strong {
+    color: #555;
 }
 div.body a {
     color: #DF2B72;

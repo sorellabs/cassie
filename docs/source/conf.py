@@ -217,4 +217,3 @@ man_pages = [
 
 # -- Additional configuration -------------------------------------------------
 highlight_language = "javascript"
-primary_domain     = "js"

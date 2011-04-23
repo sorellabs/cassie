@@ -17,6 +17,7 @@ In short: **It helps you write readable code!**
    overview
    getting-started
    advanced
+   api
 
 
 Indices and tables

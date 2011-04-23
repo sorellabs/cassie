@@ -172,7 +172,7 @@ after the Promise has been resolved, it is immediately called if such
 queue has been flushed.
 
 
-Specialized states
+Specialised states
 ''''''''''''''''''
 
 Internally a ``Promise`` either fails or succeeds, but sometimes you'll
