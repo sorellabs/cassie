@@ -314,6 +314,4 @@ function (root) {
     cassie.Promise      = Promise
     cassie.forgotten    = forgotten
     cassie.timeouted    = timeouted
-    cassie.EFulfilled   = EFulfilled
-    cassie.EUnfulfilled = EUnfulfilled
 }(this)
