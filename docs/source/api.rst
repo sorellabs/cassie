@@ -259,4 +259,31 @@ This method will fail to fulfill the :class:`Promise` with the value of
 to see why the :class:`Promise` failed.
 
 
+Specialised states
+''''''''''''''''''
 
+These methods are simply a syntatic sugar for :func:`add`. They add a
+single callback to a specific queue, and change the default queue to
+that.
+
+.. seealso:: :func:`add` for information on queues.
+
+
+.. method:: ok(Fn callback) -> Promise
+
+   Adds a callback to the ``ok`` queue.
+
+
+.. method:: failed(Fn callback) -> Promise
+
+   Adds a callback to the ``failed`` queue.
+
+
+.. method:: timeouted(Fn callback) -> Promise
+
+   Adds a callback to the ``timeouted`` queue.
+
+
+.. method:: forgotten(Fn callback) -> Promise
+
+   Adds a callback to the ``forgotten`` queue.
