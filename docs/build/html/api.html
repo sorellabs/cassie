@@ -6,8 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>API Documentation &mdash; Cassie v1.0 documentation</title>
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -17,12 +17,12 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="Cassie v1.0 documentation" href="index.html" />
     <link rel="prev" title="Unleashing the Power" href="advanced.html" />
-<link href="_static/jello.css" rel="stylesheet" type="text/css">
+<link href="static/jello.css" rel="stylesheet" type="text/css">
 
   </head>
   <body>  
@@ -62,14 +62,14 @@ object. Otherwise, you just bind the exported data to whatever variable
 you want.</p>
 <div class="section" id="module-cassie">
 <h2>module <em>Cassie</em><a class="headerlink" href="#module-cassie" title="Permalink to this headline">¶</a></h2>
-<dl class="describe">
+<dl class="attribute">
 <dt>
 <tt class="descname">Obj forgotten: { }</tt></dt>
 <dd><p>A constant that indicates the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> has failed through a call
 to <a class="reference internal" href="#forget" title="forget"><tt class="xref py py-func docutils literal"><span class="pre">forget()</span></tt></a>.</p>
 </dd></dl>
 
-<dl class="describe">
+<dl class="attribute">
 <dt>
 <tt class="descname">Obj timeouted: { }</tt></dt>
 <dd><p>A constant that indicates the Promise failed for running out of its
@@ -202,8 +202,8 @@ change the default event queue to the given <tt class="docutils literal"><span c
 <p>And, obviously, if neither arguments are given, the function won&#8217;t do
 anything.</p>
 <p>The <a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a> is quite <em>&#8220;low-level&#8221;</em> though, and the specialised
-functions should be preferred when available (<tt class="xref py py-func docutils literal"><span class="pre">ok()</span></tt>,
-<tt class="xref py py-func docutils literal"><span class="pre">failed()</span></tt>, etc).</p>
+functions should be preferred when available (<a class="reference internal" href="#ok" title="ok"><tt class="xref py py-func docutils literal"><span class="pre">ok()</span></tt></a>,
+<a class="reference internal" href="#failed" title="failed"><tt class="xref py py-func docutils literal"><span class="pre">failed()</span></tt></a>, etc).</p>
 <dl class="method">
 <dt id="flush">
 <tt class="descname">flush</tt><big>(</big><em>Str event</em><big>)</big> &rarr; Promise<a class="headerlink" href="#flush" title="Permalink to this definition">¶</a></dt>
@@ -319,7 +319,7 @@ seconds.</p>
 </dd></dl>
 
 <p>This method will fail to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> with the value of
-<tt class="xref py py-attr docutils literal"><span class="pre">timeouted</span></tt>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
+<a class="reference internal" href="#timeouted" title="timeouted"><tt class="xref py py-attr docutils literal"><span class="pre">timeouted</span></tt></a>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
 to see why the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> failed.</p>
 <dl class="method">
 <dt id="clear_timer">
@@ -342,8 +342,42 @@ to see why the <a class="reference internal" href="#Promise" title="Promise"><tt
 </dd></dl>
 
 <p>This method will fail to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> with the value of
-<tt class="xref py py-attr docutils literal"><span class="pre">forgotten</span></tt>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
+<a class="reference internal" href="#forgotten" title="forgotten"><tt class="xref py py-attr docutils literal"><span class="pre">forgotten</span></tt></a>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
 to see why the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> failed.</p>
+</div>
+<div class="section" id="specialised-states">
+<h3>Specialised states<a class="headerlink" href="#specialised-states" title="Permalink to this headline">¶</a></h3>
+<p>These methods are simply a syntatic sugar for <a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a>. They add a
+single callback to a specific queue, and change the default queue to
+that.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a> for information on queues.</p>
+</div>
+<dl class="method">
+<dt id="ok">
+<tt class="descname">ok</tt><big>(</big><em>Fn callback</em><big>)</big> &rarr; Promise<a class="headerlink" href="#ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a callback to the <tt class="docutils literal"><span class="pre">ok</span></tt> queue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="failed">
+<tt class="descname">failed</tt><big>(</big><em>Fn callback</em><big>)</big> &rarr; Promise<a class="headerlink" href="#failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a callback to the <tt class="docutils literal"><span class="pre">failed</span></tt> queue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeouted">
+<tt class="descname">timeouted</tt><big>(</big><em>Fn callback</em><big>)</big> &rarr; Promise<a class="headerlink" href="#timeouted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a callback to the <tt class="docutils literal"><span class="pre">timeouted</span></tt> queue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="forgotten">
+<tt class="descname">forgotten</tt><big>(</big><em>Fn callback</em><big>)</big> &rarr; Promise<a class="headerlink" href="#forgotten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a callback to the <tt class="docutils literal"><span class="pre">forgotten</span></tt> queue.</p>
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -362,6 +396,7 @@ to see why the <a class="reference internal" href="#Promise" title="Promise"><tt
 <li><a class="reference internal" href="#object-promise">object <em>Promise</em></a><ul>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#prototype-methods">Prototype methods</a></li>
+<li><a class="reference internal" href="#specialised-states">Specialised states</a></li>
 </ul>
 </li>
 </ul>

@@ -1,3 +1,4 @@
 syntax:glob
 ignore
-
+doctrees
+_sources
