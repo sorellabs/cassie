@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Documentation &mdash; Cassie v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Cassie v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Unleashing the Power" href="advanced.html" />
+<link href="_static/jello.css" rel="stylesheet" type="text/css">
+
+  </head>
+  <body>  
+
+    <div class="document">
+    <div class="main-header">
+        <h1><a href="index.html">Cassie</a></h1>
+        <em>Cassie v1.0 documentation</em>
+    </div>
+    <div class="rel">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="advanced.html" title="Unleashing the Power"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Cassie v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+    
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>As a small library, Cassie exposes few things, all properly contained
+under the <tt class="docutils literal"><span class="pre">cassie</span></tt> namespace. If you&#8217;re running Cassie in an
+environment that doesn&#8217;t offer support for CommonJS modules, Cassie will
+create a new namespace inside the global (usually <tt class="docutils literal"><span class="pre">window</span></tt>)
+object. Otherwise, you just bind the exported data to whatever variable
+you want.</p>
+<div class="section" id="module-cassie">
+<h2>module <em>Cassie</em><a class="headerlink" href="#module-cassie" title="Permalink to this headline">¶</a></h2>
+<dl class="describe">
+<dt>
+<tt class="descname">Obj forgotten: { }</tt></dt>
+<dd><p>A constant that indicates the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> has failed through a call
+to <a class="reference internal" href="#forget" title="forget"><tt class="xref py py-func docutils literal"><span class="pre">forget()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<tt class="descname">Obj timeouted: { }</tt></dt>
+<dd><p>A constant that indicates the Promise failed for running out of its
+allowed time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="clean">
+<tt class="descname">clean</tt><big>(</big><big>)</big> &rarr; Obj<a class="headerlink" href="#clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restores the value of the global <tt class="docutils literal"><span class="pre">cassie</span></tt> property before Cassie
+was defined, and returns a reference to Cassie.</p>
+<p>You can use this function as a workaround in the unlike event that
+the global <tt class="docutils literal"><span class="pre">cassie</span></tt> has already been taken. Or just to have a local
+reference to it instead of letting it pollute your globals:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">cassie</span> <span class="o">=</span> <span class="s2">&quot;Cassandra&quot;</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;cassie.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+    <span class="nx">cassie</span> <span class="c1">// { clean: function() { ... }, ... }</span>
+    <span class="kd">var</span> <span class="nx">future</span> <span class="o">=</span> <span class="nx">cassie</span><span class="p">.</span><span class="nx">clean</span><span class="p">()</span>
+    <span class="nx">cassie</span> <span class="c1">// &quot;Cassandra&quot;</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method is only available on environments that doesn&#8217;t support
+CommonJS modules. It&#8217;s not provided in Node.js and such
+environments.</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="object-promise">
+<h2>object <em>Promise</em><a class="headerlink" href="#object-promise" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Promise">
+<em class="property">class </em><tt class="descname">Promise</tt><a class="headerlink" href="#Promise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a deferred object, which can be manipulated before the value
+it refers to is actually resolved. As soon as the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> is
+fulfilled, all pending actions will be applied.</p>
+<p>You can either return the promise directly, or take full advantage of
+it by inheriting the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> prototype and adding your own
+custom methods.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="advanced.html"><em>Unleashing the Power</em></a> for more information on how the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>
+works and how you can extend it.</p>
+</div>
+</dd></dl>
+
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<p>Although the attributes for <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> are exposed, you shouldn&#8217;t
+manipulate them directly. As such, these are considered internal and may
+have its behaviour changed without prior warning.</p>
+<dl class="attribute">
+<dt>
+<tt class="descname">Obj callbacks: { }</tt></dt>
+<dd><p>A map of <tt class="docutils literal"><span class="pre">event</span> <span class="pre">→</span> <span class="pre">callbacks</span></tt> that the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> knows
+about.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">Array flush_queue: [ ]</tt></dt>
+<dd><p>A list of events that will have their list of callbacks flushed as
+soon as the Promise&#8217;s value is resolved.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">Obj value: null</tt></dt>
+<dd><p>The value of the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>. Any falsy value indicates that the
+Promise hasn&#8217;t been resolved yet.</p>
+<p>The resolution function will always set the value as an array of
+arguments, which will in turn be passed to the callbacks waiting
+for the resolution of the Promise.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">Num timer: null</tt></dt>
+<dd><p>A timer ID returned by <a class="reference internal" href="#timeout" title="timeout"><tt class="xref py py-func docutils literal"><span class="pre">timeout()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">Str defaultev: 'done'</tt></dt>
+<dd><p>The queue on which callbacks are added by default, when an event
+queue is not explicitly passed to <a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="prototype-methods">
+<h3>Prototype methods<a class="headerlink" href="#prototype-methods" title="Permalink to this headline">¶</a></h3>
+<dl class="method">
+<dt id="add">
+<tt class="descname">add</tt><big>(</big><em>[Str event][, Fn callback]</em><big>)</big> &rarr; Promise<a class="headerlink" href="#add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a callback to the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> and changes the default event
+queue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>event</strong> (<em>Str</em>) &#8211; The event queue to which the callback should be added.</li>
+<li><strong>callback(args...)</strong> (<em>Fn</em>) &#8211; A function that should be called when this event happens. Such
+function will take as its parameters the value of the
+<a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>Both parameters for the <a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a> method are optional.</p>
+<p>Should <tt class="docutils literal"><span class="pre">event</span></tt> not be given, the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> will just use the
+default event queue (<tt class="xref py py-attr docutils literal"><span class="pre">defaultev</span></tt>), and place the callback
+there. Having this default queue allows less repeating yourself all over
+the place:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="c1">// foo, bar and baz are added to queue &#39;ok&#39;</span>
+<span class="nx">promise</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;ok&#39;</span><span class="p">).</span><span class="nx">add</span><span class="p">(</span><span class="nx">foo</span><span class="p">).</span><span class="nx">add</span><span class="p">(</span><span class="nx">bar</span><span class="p">).</span><span class="nx">add</span><span class="p">(</span><span class="nx">baz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On the other hand, if the callback is not given, the function will just
+change the default event queue to the given <tt class="docutils literal"><span class="pre">event</span></tt>.</p>
+<p>And, obviously, if neither arguments are given, the function won&#8217;t do
+anything.</p>
+<p>The <a class="reference internal" href="#add" title="add"><tt class="xref py py-func docutils literal"><span class="pre">add()</span></tt></a> is quite <em>&#8220;low-level&#8221;</em> though, and the specialised
+functions should be preferred when available (<tt class="xref py py-func docutils literal"><span class="pre">ok()</span></tt>,
+<tt class="xref py py-func docutils literal"><span class="pre">failed()</span></tt>, etc).</p>
+<dl class="method">
+<dt id="flush">
+<tt class="descname">flush</tt><big>(</big><em>Str event</em><big>)</big> &rarr; Promise<a class="headerlink" href="#flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls all callbacks associated with the given event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<em>Str</em>) &#8211; the event queue to flush.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>The flush method does two different things, depending on whether the
+<a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> has been resolved or not. If the promise still hasn&#8217;t a
+value, this method will add the event to the
+<tt class="xref py py-attr docutils literal"><span class="pre">flush_queue</span></tt>. Otherwise, it&#8217;ll fire all the callbacks for the
+events in the <tt class="xref py py-attr docutils literal"><span class="pre">flush_queue</span></tt>, then clear the queue.</p>
+<p>Callbacks are called in the context of the current <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>,
+with the promise&#8217;s value array applied as the callback arguments.</p>
+<dl class="method">
+<dt id="done">
+<tt class="descname">done</tt><big>(</big><em>Arrayish values</em><big>)</big> &rarr; Promise<a class="headerlink" href="#done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolves the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> to the given values and flushes the
+callbacks defined for <tt class="docutils literal"><span class="pre">done</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>values</strong> (<em>Arrayish</em>) &#8211; Any array-like object to be passed as arguments to the
+callbacks.</td>
+</tr>
+<tr class="field"><th class="field-name">Fires :</th><td class="field-body"><tt class="docutils literal"><span class="pre">done</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>The given <tt class="docutils literal"><span class="pre">values</span></tt> array-like object is cloned by simple applying
+<tt class="docutils literal"><span class="pre">Array.prototype.slice</span></tt> to it. This makes it easier for caller
+functions to just pass the <tt class="docutils literal"><span class="pre">arguments</span></tt> object straight up into this
+method.</p>
+<p>If the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> has already been resolved, this method does
+nothing, otherwise it&#8217;ll flush all callbacks in the <tt class="xref py py-attr docutils literal"><span class="pre">flush_queue</span></tt>,
+plus the <tt class="docutils literal"><span class="pre">done</span></tt> event queue.</p>
+<p>Done is the lowest level of Promise resolution, and shouldn&#8217;t really be
+called directly (unless you want to introduce a new class of primitive
+Promise state). Instead, take a look at <a class="reference internal" href="#bind" title="bind"><tt class="xref py py-func docutils literal"><span class="pre">bind()</span></tt></a> and <a class="reference internal" href="#fail" title="fail"><tt class="xref py py-func docutils literal"><span class="pre">fail()</span></tt></a>.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><em class="xref std std-ref">Specialised states</em> for an explanation of the order in which
+these callback queues are flushed.</p>
+</div>
+<dl class="method">
+<dt id="fail">
+<tt class="descname">fail</tt><big>(</big><em>Obj error</em><big>)</big> &rarr; Promise<a class="headerlink" href="#fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fails to fulfill the promise,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>error</strong> (<em>Obj</em>) &#8211; An object describing why the function error&#8217;d.</td>
+</tr>
+<tr class="field"><th class="field-name">Fires :</th><td class="field-body"><tt class="docutils literal"><span class="pre">fail</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>This function is used to indicate that a function can&#8217;t be fulfilled,
+and as such any callback waiting for the function to error should be
+called.</p>
+<p>Fail is a low-level, general error routine. For more specialised methods
+see <a class="reference internal" href="#timeout" title="timeout"><tt class="xref py py-func docutils literal"><span class="pre">timeout()</span></tt></a> and <a class="reference internal" href="#forget" title="forget"><tt class="xref py py-func docutils literal"><span class="pre">forget()</span></tt></a>.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#done" title="done"><tt class="xref py py-func docutils literal"><span class="pre">done()</span></tt></a> for information on how the callbacks are flushed.</p>
+</div>
+<dl class="method">
+<dt id="bind">
+<tt class="descname">bind</tt><big>(</big><em>values...</em><big>)</big> &rarr; Promise<a class="headerlink" href="#bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Successfully fulfills the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>values</strong> &#8211; Positional parameters to be passed to all callbacks waiting for
+this <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> to be resolved.</td>
+</tr>
+<tr class="field"><th class="field-name">Fires :</th><td class="field-body"><tt class="docutils literal"><span class="pre">ok</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeout">
+<tt class="descname">timeout</tt><big>(</big><em>Num delay</em><big>)</big> &rarr; Promise<a class="headerlink" href="#timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fails to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> after the given number of
+seconds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>delay</strong> (<em>Num</em>) &#8211; The number of seconds to wait before failing to fulfill this
+<a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>.</td>
+</tr>
+<tr class="field"><th class="field-name">Fires :</th><td class="field-body"><tt class="docutils literal"><span class="pre">timeouted</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>This method will fail to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> with the value of
+<tt class="xref py py-attr docutils literal"><span class="pre">timeouted</span></tt>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
+to see why the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> failed.</p>
+<dl class="method">
+<dt id="clear_timer">
+<tt class="descname">clear_timer</tt><big>(</big><big>)</big> &rarr; Promise<a class="headerlink" href="#clear_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears any timer that may have been set with <a class="reference internal" href="#timeout" title="timeout"><tt class="xref py py-func docutils literal"><span class="pre">timeout()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="forget">
+<tt class="descname">forget</tt><big>(</big><big>)</big> &rarr; Promise<a class="headerlink" href="#forget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Immediately fails to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Fires :</th><td class="field-body"><tt class="docutils literal"><span class="pre">forgotten</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>This method will fail to fulfill the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> with the value of
+<tt class="xref py py-attr docutils literal"><span class="pre">forgotten</span></tt>. Callbacks bound to <tt class="docutils literal"><span class="pre">fail</span></tt> can analyse the parameter
+to see why the <a class="reference internal" href="#Promise" title="Promise"><tt class="xref py py-class docutils literal"><span class="pre">Promise</span></tt></a> failed.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Documentation</a><ul>
+<li><a class="reference internal" href="#module-cassie">module <em>Cassie</em></a></li>
+<li><a class="reference internal" href="#object-promise">object <em>Promise</em></a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#prototype-methods">Prototype methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="advanced.html"
+                        title="previous chapter">Unleashing the Power</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Quildreen Motta &lt;quildreen@gmail.com&gt;.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

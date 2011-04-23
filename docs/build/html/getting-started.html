@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started &mdash; Cassie v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Cassie v1.0 documentation" href="index.html" />
+    <link rel="next" title="Unleashing the Power" href="advanced.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+<link href="_static/jello.css" rel="stylesheet" type="text/css">
+
+  </head>
+  <body>  
+
+    <div class="document">
+    <div class="main-header">
+        <h1><a href="index.html">Cassie</a></h1>
+        <em>Cassie v1.0 documentation</em>
+    </div>
+    <div class="rel">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="advanced.html" title="Unleashing the Power"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Cassie v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+    
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>This page is meant as a really quick&#8217;n&#8217;dirty introduction to
+Cassie. It&#8217;ll walk you through the basics to get it up and running — to
+take advantage of all its awesomeness, be sure to <a class="reference internal" href="advanced.html"><em>peer into the
+depths</em></a>.</p>
+<div class="section" id="what-you-ll-need">
+<h2>What you&#8217;ll need<a class="headerlink" href="#what-you-ll-need" title="Permalink to this headline">¶</a></h2>
+<p>Be sure to <a class="reference external" href="https://github.com/killdream/cassie/zipball/master">download the lastest snapshot</a> or clone the git
+repository:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">$</span> <span class="nx">git</span> <span class="nx">clone</span> <span class="nx">git</span><span class="o">:</span><span class="c1">//github.com/killdream/cassie.git</span>
+</pre></div>
+</div>
+<p>The file that you want for now is <tt class="docutils literal"><span class="pre">src/cassie.js</span></tt>.</p>
+</div>
+<div class="section" id="installing">
+<h2>&#8220;Installing&#8221;<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>To install Cassie on some page that&#8217;ll run on a browser, you just stick
+it at the right end of your <tt class="docutils literal"><span class="pre">&lt;body&gt;</span></tt> tag. <a class="reference external" href="http://developer.yahoo.com/performance/rules.html#js_bottom">This will also ensure that
+your pages load faster</a>:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span> <span class="c">&lt;!-- ... --&gt;</span> <span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;path/to/jello.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;path/to/your/other/jsfiles.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>If you want to use it somewhere that supports CommonJS modules (like
+Node.js), even easier: just <tt class="docutils literal"><span class="pre">require</span></tt> it:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">cassie</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;/path/to/cassie&#39;</span><span class="p">)</span> <span class="c1">// without .js</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>Now that you have your scripts in place, you can have a sneaky-peak in
+the awesomeness. Let&#8217;s see how you can bend your asynchronous calls in
+sweet Promises.</p>
+<p>First, we&#8217;ll define a simple asynchronous function. This function does
+nothing aside of calling its callbacks in a few seconds. The usual way
+is just to have a function that gets a callback as argument:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">seconds</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">seconds</span><span class="p">)</span> <span class="p">}</span>
+              <span class="p">,</span><span class="nx">seconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, notice how you can ever only pass a single callback to the
+function, and once you&#8217;ve done that, it&#8217;s over. No way of doing anything
+else with it.</p>
+<p>But what if we could not only add several callbacks to it (even after
+the function has returned), but also define a maximum of time these
+callbacks would wait for it? Guess what: Cassie allows you to do that:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">seconds</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Make a Promise</span>
+    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cassie</span><span class="p">.</span><span class="nx">Promise</span>
+
+    <span class="c1">// Plan when you&#39;ll honour that Promise</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// When the time is right, honour the promise!</span>
+        <span class="nx">promise</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">seconds</span><span class="p">)</span>
+    <span class="p">},</span> <span class="nx">seconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1">// And let people know a promise has been made!</span>
+    <span class="k">return</span> <span class="nx">promise</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Basically those are the four steps you&#8217;ll ever need. First you make a
+Promise to Cassie. Then you decide how you&#8217;ll honour that Promise —
+don&#8217;t worry, little <a class="reference external" href="http://en.wikipedia.org/wiki/Cassandra">Cassandra</a> is a prophet, she knows of the
+Future. Last but not least, you return this Promise, so other people can
+find out about it, and plan their lives around it :3</p>
+<p>The last step is actually honouring your promise, which is done through
+the arcane spell <tt class="docutils literal"><span class="pre">bind</span></tt>. This will magically transmit all the things
+you&#8217;ve told Cassie to everyone that was waiting for the outcome of that
+Promise.</p>
+<p>Unfortunatelly, sometimes you will not be able to honour your promises —
+though if they depend only on you, you&#8217;re doing something wrong! — For
+those cases, you can simply tell the world how you&#8217;re sorry, and what
+has gone wrong through the arcane spell <tt class="docutils literal"><span class="pre">fail</span></tt>.</p>
+<p>Both accept any number of excuses/joys (which some dare call
+<tt class="docutils literal"><span class="pre">arguments</span></tt>) and will happily pass them all along.</p>
+<div class="section" id="all-nice-but-now-what">
+<h3>All nice... but now what?<a class="headerlink" href="#all-nice-but-now-what" title="Permalink to this headline">¶</a></h3>
+<p>Well, now you can go around doing things, and tell the world to watch
+out for them. First, let&#8217;s just see how you can tell people that you
+have premonitions:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">task</span> <span class="o">=</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">ok</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;I haz premonitions&#39;</span><span class="p">)</span> <span class="p">})</span>
+
+<span class="kd">function</span> <span class="nx">tell_other_guy</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">task</span><span class="p">.</span><span class="nx">ok</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Whoa, awesum\&#39;&#39;</span><span class="p">)</span> <span class="p">})}</span>
+
+<span class="nx">tell_other_guy</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running it you&#8217;ll see two alert boxes on the screen, after two
+seconds. The first one says <em>&#8220;I has premonitions</em>&#8221; and the second one
+<em>&#8220;Whoa, awesum&#8217;</em>&#8221;. But hey, they all rely on the promise being
+successfully honoured, and sometimes this may not be the case.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you&#8217;re running this outside of the browser, you&#8217;ll need to map
+alert to some function that outputs text. It may be <tt class="docutils literal"><span class="pre">console.log</span></tt>
+(like in Node.js) or <tt class="docutils literal"><span class="pre">print</span></tt> (like Rhino).</p>
+<p class="last">So whenever you see alert, just replace it by one of these
+functions.</p>
+</div>
+</div>
+<div class="section" id="what-if-shit-happens">
+<h3>What if shit happens?<a class="headerlink" href="#what-if-shit-happens" title="Permalink to this headline">¶</a></h3>
+<p>If by any chance you can&#8217;t honour your promise, people need a way of
+dealing with it. Fortunately, in Cassie this is handled as easily and
+straight forward as the success cases:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">ok</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span> <span class="p">})</span> <span class="c1">// never happens</span>
+        <span class="p">.</span><span class="nx">failed</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;What was that again?&#39;</span><span class="p">)</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">forget</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This will quickly prompt you with <em>&#8220;What was that again?</em>&#8221;. You can
+forget your promises when you need to, just be sure you have a reason
+for this — promises are important!</p>
+</div>
+<div class="section" id="but-why-so-harsh">
+<h3>But why so harsh?!<a class="headerlink" href="#but-why-so-harsh" title="Permalink to this headline">¶</a></h3>
+<p>As you see, you can quickly forget your promises, but sometimes that&#8217;s
+just so harsh. What if you want to give your promise a little bit of
+time before saying <em>&#8220;I don&#8217;t care&#8221;</em>?</p>
+<p>Well, rest assurred my friend, because you can. And it&#8217;s just as simple
+as forgetting your promises:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">delay</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">failed</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">why</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">why</span> <span class="o">===</span> <span class="nx">cassie</span><span class="p">.</span><span class="nx">timeouted</span><span class="p">)</span>
+                <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Oh shit, can&#39;t wait anymoar&quot;</span><span class="p">)</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">timeout</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cassie provides the functions <tt class="docutils literal"><span class="pre">timeouted</span></tt> and <tt class="docutils literal"><span class="pre">forgotten</span></tt> as more
+specialised kinds of <tt class="docutils literal"><span class="pre">failed</span></tt> callbacks.</p>
+</div>
+</div>
+</div>
+<div class="section" id="where-to-go-from-here">
+<h2>Where to go from here?<a class="headerlink" href="#where-to-go-from-here" title="Permalink to this headline">¶</a></h2>
+<p>Hell yeah motherfucker, this is some hot stuff... but why the example on
+the <a class="reference internal" href="overview.html"><em>Overview</em></a> page looks <strong>so damn more awesome</strong>?</p>
+<p>Well, it&#8217;s because this is just the starting point. Cassie is designed
+to provide just the essential tools out of the box, so people can extend
+it easily to suit their needs.</p>
+<p>And when you realise you need the additional power, it&#8217;s about time you
+should <a class="reference internal" href="advanced.html"><em>peer into the depths</em></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting Started</a><ul>
+<li><a class="reference internal" href="#what-you-ll-need">What you&#8217;ll need</a></li>
+<li><a class="reference internal" href="#installing">&#8220;Installing&#8221;</a></li>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a><ul>
+<li><a class="reference internal" href="#all-nice-but-now-what">All nice... but now what?</a></li>
+<li><a class="reference internal" href="#what-if-shit-happens">What if shit happens?</a></li>
+<li><a class="reference internal" href="#but-why-so-harsh">But why so harsh?!</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#where-to-go-from-here">Where to go from here?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="advanced.html"
+                        title="next chapter">Unleashing the Power</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/getting-started.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Quildreen Motta &lt;quildreen@gmail.com&gt;.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
