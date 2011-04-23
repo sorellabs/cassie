@@ -167,7 +167,7 @@ function (root) {
             if (promise.value)
                 fire(promise, event, callback)
             else
-                add_callback(promise, event, callback)
+                callback && add_callback(promise, event, callback)
         }
 
         function fire(promise, event, callback) {
@@ -190,7 +190,7 @@ function (root) {
         //
         function flush(event) {
             if (!this.value)
-                this.flush_queue.push(event)
+                event && this.flush_queue.push(event)
             else while (event = this.flush_queue.shift())
                 flush_ev(this, event) 
 
