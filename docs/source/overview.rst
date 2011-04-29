@@ -70,6 +70,15 @@ the lastest snapshot`_ or clone the entire repository::
 .. _download the lastest snapshot: https://github.com/killdream/cassie/zipball/master
 
 
+Examples
+--------
+
+The ``examples`` folder contain some examples of using Cassie. You can
+also sail yer ships to http://killdream.github.com/cassie/examples/ to
+see 'em live.
+
+
+
 Getting Support
 ---------------
 
