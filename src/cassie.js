@@ -50,7 +50,7 @@
 function (root) {
     if (typeof exports == 'undefined') {
         old    = root.cassie
-        cassie = root.cassie = root.cassie || {}
+        cassie = root.cassie = {}
         cassie.clean = function() {
             root.cassie = old
             return cassie
