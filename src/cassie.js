@@ -47,24 +47,28 @@
 //
 
 '@cassie',
-function (root) {
+function (root) { var cassie, old
+
+    // Aliases for some long properties
+    ,slice = Array.prototype.slice
+
+    // Constants with values for errors
+    ,forgotten = {}
+    ,timeouted = {}
+
+
+
     if (typeof exports == 'undefined') {
         old    = root.cassie
         cassie = root.cassie = {}
+
+        // Removes `cassie' from the global object
         cassie.clean = function() {
             root.cassie = old
             return cassie
         }}
     else
         cassie = exports
-
-
-    var cassie, old
-      , slice = Array.prototype.slice
-
-      // Constants with values for errors
-      , forgotten = {}
-      , timeouted = {}
 
 
 
@@ -105,7 +109,7 @@ function (root) {
 
         ////// Function add_callback ///////////////////////////////////////////
         // ::
-        //     add_callback(Obj promise, Str event, Fn callback) → Fn
+        //     add_callback(Obj promise, Str event, Fn callback)
         //
         // Adds a callback to a ``Promise``.
         //
@@ -117,12 +121,12 @@ function (root) {
         // Returns the given callback function.
         //
         function add_callback(promise, event, callback) {
-            get_queue(promise, event).push(callback)
-            return callback
+            if (callback)
+                get_queue(promise, event).push(callback)
         }
 
         function get_queue(promise, event) {
-            return promise.callbacks[event]
+            return  promise.callbacks[event]
                 || (promise.callbacks[event] = [])
         }
 
@@ -167,11 +171,11 @@ function (root) {
             if (promise.value)
                 fire(promise, event, callback)
             else
-                callback && add_callback(promise, event, callback)
+                add_callback(promise, event, callback)
         }
 
-        function fire(promise, event, callback) {
-            var queue = get_queue(promise, event)
+        function fire(promise, event, callback) { var queue
+            queue = get_queue(promise, event)
             if (callback && queue.flushed)
                 return callback.apply(promise, promise.value)
         }
@@ -192,15 +196,13 @@ function (root) {
             if (!this.value)
                 event && this.flush_queue.push(event)
             else while (event = this.flush_queue.shift())
-                flush_ev(this, event) 
+                flush_ev(this, event)
 
             return this
         }
 
-        function flush_ev(promise, event) {
-            var callbacks = promise.callbacks[event] || []
-              , current
-
+        function flush_ev(promise, event) { var callbacks, current
+            callbacks = promise.callbacks[event] || []
             while (current = callbacks.shift())
                 current.apply(promise, promise.value)
 
@@ -269,11 +271,10 @@ function (root) {
         //
         // The promise fails with the value of ``timeouted``.
         //
-        function timeout(delay) {
-            var promise = this
+        function timeout(delay) { var self
+            self = this
             this.timer = setTimeout(function(){
-                promise.flush('timeouted')
-                       .fail(timeouted)
+                self.flush('timeouted').fail(timeouted)
             }, delay * 1000)
             return this
         }
