@@ -109,22 +109,31 @@ function (root) { var cassie, old
 
         ////// Function add_callback ///////////////////////////////////////////
         // 
-        //   Object promise, String event, Function callback
+        //   Promise promise, String event, Function callback -> Number?
         //
         // Adds a callback to a `Promise`.
         //
         // The callback will be called whenever the given event happens
         // within the given promise, in the context of the promise (ie.:
-        // ``this`` inside the callback will refer to the given promise)
+        // `this` inside the callback will refer to the given promise)
         // and the arguments provided when the promise was fulfilled.
         //
-        // Returns the given callback function.
+        // :warning: side-effects
+        //     The list of callbacks is modified in-place, if a truthy
+        //     value is passed as the callback.
         //
         function add_callback(promise, event, callback) {
-            if (callback)
-                get_queue(promise, event).push(callback)
+            return callback? get_queue(promise, event).push(callback)
+                           : null
         }
 
+
+        ////// Function get_queue //////////////////////////////////////////////
+        //
+        //   Promise promise, String event -> Array
+        // 
+        // Returns the list of callbacks for the given event.
+        //
         function get_queue(promise, event) {
             return  promise.callbacks[event]
                 || (promise.callbacks[event] = [])
@@ -141,11 +150,11 @@ function (root) { var cassie, old
         // leverage more specialized promises, Cassie supports defining
         // a default event to which callbacks are bound.
         // 
-        // For example, instead of writting the following::
+        // For example, instead of writting the following:
         // 
         //     promise.add('ok', foo).add('ok', bar)
         // 
-        // You could go with::
+        // You could go with:
         // 
         //     promise.add('ok').foo().bar()
         // 
