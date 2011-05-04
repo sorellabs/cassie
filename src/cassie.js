@@ -17,7 +17,7 @@
 // resolved. This allows you to write in a clear chaining DSL rather
 // than using a clusterfuck of callbacks.
 //
-// Take an Ajax request, for example. The usual way::
+// Take an Ajax request, for example. The usual way:
 //
 //     var req = ajax.get('data.json'
 //               , function (resp) { /* success */
@@ -28,15 +28,15 @@
 //               })
 //     setTimeout(req.fail, 10000)
 //
-// With promises, you could get this::
+// With promises, you could get this:
 //
 //     var req = ajax.get('data.json')
 //                   .ok().update('#data')
 //                   .failed().show_error()
 //                   .timeout(10)
 //
-// You can pass this ``req`` object around, and other functions can add
-// their own manipulations to the object as well::
+// You can pass this `req` object around, and other functions can add
+// their own manipulations to the object as well:
 //
 //     function log_it(req) {
 //         return req.ok(log('success'))
@@ -79,7 +79,7 @@ function (root) { var cassie, old
     // promise will apply the pending actions.
     //
     // You can either return the promise directly, or take full
-    // advantage of it by inheriting the ``Promise``'s prototoype and
+    // advantage of it by inheriting the `Promise`'s prototoype and
     // adding your own custom methods.
     //
     function Promise () {
@@ -108,10 +108,10 @@ function (root) { var cassie, old
 
 
         ////// Function add_callback ///////////////////////////////////////////
-        // ::
-        //     add_callback(Obj promise, Str event, Fn callback)
+        // 
+        //   Object promise, String event, Function callback
         //
-        // Adds a callback to a ``Promise``.
+        // Adds a callback to a `Promise`.
         //
         // The callback will be called whenever the given event happens
         // within the given promise, in the context of the promise (ie.:
@@ -132,10 +132,10 @@ function (root) { var cassie, old
 
 
         ////// Method add //////////////////////////////////////////////////////
-        // ::
-        //     add(Str event[, Fn callback]) → Promise
+        // 
+        //   String event, Function callback? -> this
         //
-        // Adds a callback to the ``Promise``.
+        // Adds a callback to the `Promise`.
         //
         // Passing a callback directly to the add method is optional, to
         // leverage more specialized promises, Cassie supports defining
@@ -155,7 +155,8 @@ function (root) { var cassie, old
         // The default event persists until another `add` call with an
         // explicit event is issued.
         // 
-        // See :fn:`add_callback` for more information.
+        // :see also:
+        //    * `add_callback` - for how the callbacks are added
         //
         function add(event, callback) {
             if (typeof event == 'function') {
@@ -182,14 +183,14 @@ function (root) { var cassie, old
 
 
         ////// Method flush ////////////////////////////////////////////////////
-        // ::
-        //     flush(Str event) → Promise
+        // 
+        //   String event -> this
         //
         // Calls all callbacks associated with the given event.
         //
-        // The callbacks are called in the context of this ``Promise``
-        // (ie.: ``this`` inside such callback will refer to this
-        // ``Promise``), and with any arguments that have been passed to
+        // The callbacks are called in the context of this `Promise`
+        // (ie.: `this` inside such callback will refer to this
+        // `Promise`), and with any arguments that have been passed to
         // the promise when it was fulfilled.
         //
         function flush(event) {
@@ -214,15 +215,15 @@ function (root) { var cassie, old
 
 
         ////// Method done /////////////////////////////////////////////////////
-        // ::
-        //     done(ArrayLike values) → Promise
+        // 
+        //   Arraylike values -> this
         //
         // Resolves the promise to the given values and call the
-        // callbacks defined for ``done``.
+        // callbacks defined for `done`.
         //
         // The given value array is cloned, then assigned to the
         // promise. This makes it easier for caller functions to just
-        // pass the ``arguments`` object straight up to this function.
+        // pass the `arguments` object straight up to this function.
         //
         // If the promise has already been resolved, this method is a
         // noop.
@@ -237,13 +238,14 @@ function (root) { var cassie, old
 
 
         ////// Method fail /////////////////////////////////////////////////////
-        // ::
-        //     fail(Obj error) → Promise
+        // 
+        //   Object error -> this
         //
-        // Fails to fulfill the promise, and calls all the ``fail``
+        // Fails to fulfill the promise, and calls all the `fail`
         // callbacks passing the error as parameter.
         //
-        // See :fn:`done` for more information.
+        // :see also:
+        //    * `done`
         //
         function fail() {
             return this.flush('fail').done(arguments)
@@ -251,13 +253,14 @@ function (root) { var cassie, old
 
 
         ////// Method bind /////////////////////////////////////////////////////
-        // ::
-        //     bind(values...) → Promise
+        // 
+        //    values... -> this
         //
-        // Successfully fulfills the promise, and calls the ``bind``
+        // Successfully fulfills the promise, and calls the `bind`
         // callbacks passing the values as parameter.
         //
-        // See :fn:`resolve` for more information.
+        // :see also:
+        //    * `resolve`
         //
         function bind() {
             return this.flush('ok').done(arguments)
@@ -265,13 +268,13 @@ function (root) { var cassie, old
 
 
         ////// Method timeout //////////////////////////////////////////////////
-        // ::
-        //     timeout(Num delay) → Promise
+        // 
+        //   Number delay -> this
         //
         // Fails to fulfill the promise after the given number of
         // seconds.
         //
-        // The promise fails with the value of ``timeouted``.
+        // The promise fails with the value of `timeouted`.
         //
         function timeout(delay) { var self
             self = this
@@ -283,8 +286,8 @@ function (root) { var cassie, old
 
 
         ////// Method clear_timer //////////////////////////////////////////////
-        // ::
-        //     clear_timer() → Promise
+        // 
+        //   -> this
         //
         // Clears any timer that may exist for this promise.
         //
@@ -295,17 +298,17 @@ function (root) { var cassie, old
 
 
         ////// Method forget ///////////////////////////////////////////////////
-        // ::
-        //     forget() → Promise
+        // 
+        //   -> this
         //
-        // Cancels the promise, and fails with the value of ``forgotten``.
+        // Cancels the promise, and fails with the value of `forgotten`.
         //
         function forget() {
             return this.flush('forgotten').fail(forgotten)
         }
 
 
-        ////// -Shortcuts for add(event[, callback]) //////////////////////////
+        ////// -Shortcuts for add(event[, callback]) ///////////////////////////
         function ok(fn)         { return this.add('ok',        fn) }
         function failed(fn)     { return this.add('fail',      fn) }
         function _timeouted(fn) { return this.add('timeouted', fn) }
@@ -313,7 +316,7 @@ function (root) { var cassie, old
     }()
 
 
-    ///// Exṕorts //////////////////////////////////////////////////////////////
+    ///// Exports //////////////////////////////////////////////////////////////
     cassie.Promise      = Promise
     cassie.forgotten    = forgotten
     cassie.timeouted    = timeouted
