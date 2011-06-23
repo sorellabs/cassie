@@ -46,33 +46,21 @@
 //     var req = log_it(ajax.get('data.json').timeout(10))
 //
 
-'@cassie',
-function (root) { var cassie, old
+void function (root) { var cassie, old
 
     // Aliases for some long properties
-    ,slice = Array.prototype.slice
+    , slice = Array.prototype.slice
 
     // Constants with values for errors
-    ,forgotten = {}
-    ,timeouted = {}
+    , forgotten = {}
+    , timeouted = {}
 
-
-
-    if (typeof exports == 'undefined') {
-        old    = root.cassie
-        cassie = root.cassie = {}
-
-        // Removes `cassie' from the global object
-        cassie.clean = function() {
-            root.cassie = old
-            return cassie
-        }}
-    else
-        cassie = exports
 
 
 
     ///// Object Promise ///////////////////////////////////////////////////////
+    //
+    //    new ()
     //
     // Creates a deferred object, that can be manipulated before the
     // value is actually resolved. As soon as it is fulfilled, this
@@ -108,10 +96,14 @@ function (root) { var cassie, old
 
 
         ////// Function add_callback ///////////////////////////////////////////
-        // 
-        //   Promise promise, String event, Function callback -> Number?
+        //
+        //   (promise, event[, callback]) ⇒ Number
         //
         // Adds a callback to a `Promise`.
+        //
+        // :param: {Promise}  promise
+        // :param: {String}   event
+        // :param: {Function} callback
         //
         // The callback will be called whenever the given event happens
         // within the given promise, in the context of the promise (ie.:
@@ -130,9 +122,12 @@ function (root) { var cassie, old
 
         ////// Function get_queue //////////////////////////////////////////////
         //
-        //   Promise promise, String event -> Array
-        // 
+        //   (promise, event) ⇒ Array
+        //
         // Returns the list of callbacks for the given event.
+        //
+        // :param: {Promise} promise
+        // :param: {String}  event
         //
         function get_queue(promise, event) {
             return  promise.callbacks[event]
@@ -141,29 +136,32 @@ function (root) { var cassie, old
 
 
         ////// Method add //////////////////////////////////////////////////////
-        // 
-        //   String event, Function callback? -> this
+        //
+        //   (event[, callback]) ⇒ this
         //
         // Adds a callback to the `Promise`.
+        //
+        // :param: {String}   event
+        // :param: {Function} callback
         //
         // Passing a callback directly to the add method is optional, to
         // leverage more specialized promises, Cassie supports defining
         // a default event to which callbacks are bound.
-        // 
+        //
         // For example, instead of writting the following:
-        // 
+        //
         //     promise.add('ok', foo).add('ok', bar)
-        // 
+        //
         // You could go with:
-        // 
+        //
         //     promise.add('ok').foo().bar()
-        // 
+        //
         // Of course, given you have a specialized promise implementing
         // `foo` and `bar`.
-        // 
+        //
         // The default event persists until another `add` call with an
         // explicit event is issued.
-        // 
+        //
         // :see also:
         //    * `add_callback` - for how the callbacks are added
         //
@@ -192,10 +190,12 @@ function (root) { var cassie, old
 
 
         ////// Method flush ////////////////////////////////////////////////////
-        // 
-        //   String event -> this
+        //
+        //   (event) ⇒ this
         //
         // Calls all callbacks associated with the given event.
+        //
+        // :param: {String} event
         //
         // The callbacks are called in the context of this `Promise`
         // (ie.: `this` inside such callback will refer to this
@@ -220,15 +220,17 @@ function (root) { var cassie, old
 
             callbacks.flushed = true
         }
-            
+
 
 
         ////// Method done /////////////////////////////////////////////////////
-        // 
-        //   Arraylike values -> this
+        //
+        //   (values) ⇒ this
         //
         // Resolves the promise to the given values and call the
         // callbacks defined for `done`.
+        //
+        // :param: {Array-like} values
         //
         // The given value array is cloned, then assigned to the
         // promise. This makes it easier for caller functions to just
@@ -247,11 +249,13 @@ function (root) { var cassie, old
 
 
         ////// Method fail /////////////////////////////////////////////////////
-        // 
-        //   Object error -> this
+        //
+        //   (error) ⇒ this
         //
         // Fails to fulfill the promise, and calls all the `fail`
         // callbacks passing the error as parameter.
+        //
+        // :param: {Object} error
         //
         // :see also:
         //    * `done`
@@ -262,8 +266,8 @@ function (root) { var cassie, old
 
 
         ////// Method bind /////////////////////////////////////////////////////
-        // 
-        //    values... -> this
+        //
+        //    (values...) ⇒ this
         //
         // Successfully fulfills the promise, and calls the `bind`
         // callbacks passing the values as parameter.
@@ -277,11 +281,13 @@ function (root) { var cassie, old
 
 
         ////// Method timeout //////////////////////////////////////////////////
-        // 
-        //   Number delay -> this
+        //
+        //   (delay) ⇒ this
         //
         // Fails to fulfill the promise after the given number of
         // seconds.
+        //
+        // :param: {Number} delay
         //
         // The promise fails with the value of `timeouted`.
         //
@@ -295,8 +301,8 @@ function (root) { var cassie, old
 
 
         ////// Method clear_timer //////////////////////////////////////////////
-        // 
-        //   -> this
+        //
+        //   () ⇒ this
         //
         // Clears any timer that may exist for this promise.
         //
@@ -307,8 +313,8 @@ function (root) { var cassie, old
 
 
         ////// Method forget ///////////////////////////////////////////////////
-        // 
-        //   -> this
+        //
+        //   () ⇒ this
         //
         // Cancels the promise, and fails with the value of `forgotten`.
         //
@@ -326,7 +332,20 @@ function (root) { var cassie, old
 
 
     ///// Exports //////////////////////////////////////////////////////////////
-    cassie.Promise      = Promise
-    cassie.forgotten    = forgotten
-    cassie.timeouted    = timeouted
+    if (typeof exports == 'undefined') {
+        old    = root.cassie
+        cassie = root.cassie = {}
+
+        // Removes `cassie' from the global object
+        cassie.make_local = function() {
+            root.cassie = old
+            return cassie }}
+    else
+        cassie = exports
+
+
+    ////// -Properties under `cassie` //////////////////////////////////////////
+    cassie.Promise   = Promise
+    cassie.forgotten = forgotten
+    cassie.timeouted = timeouted
 }(this)
