@@ -5,42 +5,52 @@
  *     _________________________________________________________________      *
  *        Copyright (c) 2011 Quildreen Motta // Licenced under MIT/X11        *
  ******************************************************************************/
-
-'@global',
-function (root, cassie) {
+void function (root, cassie) {
 
     // Aliases for some JavaLongPropertyNames.Within.Java.Long.Objects
-    var has = Object.prototype.hasOwnProperty
-      , cls = Object.prototype.toString
+    var has       = Object.prototype.hasOwnProperty
+      , cls       = Object.prototype.toString
+      , slice     = Array.prototype.slice
+      , keys      = Object.keys
+      , Promise   = cassie.Promise
 
-      , state_map = ["setup", "loading", "loaded", "interactive"]
+      , state_map = [ 'setup'
+                    , 'loading'
+                    , 'loaded'
+                    , 'interactive' ]
 
     //// HELPER FUNCTIONS //////////////////////////////////////////////////////
-    // Makes a constructor inherit `base' and implement `props'.
-    function extend(ctor, base, props) {
-        var prop
+    // Makes a constructor inherit `base`
+    function inherits(ctor, base) {
         ctor.prototype             = Object.create(base)
         ctor.prototype.constructor = ctor
+        return ctor
+    }
 
-        for (prop in props)
-            if (has.call(props, prop))
-                ctor.prototype[prop] = props[prop]
+    // Extends an object with properties from multiple sources
+    function extend(target) {
+        slice.call(arguments, 1).forEach(function(source) {
+            keys(source).reduce(function(acc, key) {
+                target[key] = source[key]
+                return target }, target )})
+
+        return target
     }
 
     // Return the element with the given `id' (not sanitised for IE)
     function el(elm) {
-        return classOf(elm) == 'String'? document.getElementById(elm)
-                                       : elm
+        return class_of(elm) == 'String'? document.getElementById(elm)
+                                        : elm
     }
 
     // Return the internall [[Class]] of the given `obj'
-    function classOf(obj) {
+    function class_of(obj) {
         return cls.call(obj).slice(8, -1)
     }
 
     // Creates a new element
-    function create(tag) {
-        return document.createElement(tag)
+    function tag(name) {
+        return document.createElement(name)
     }
 
     // Returns a short date representation
@@ -49,7 +59,7 @@ function (root, cassie) {
     }
 
     // Simple templating function, like Python's str.format
-    function fmt(str, data) {
+    function format(str, data) {
         return str.replace(/{(.+?)}/g, function(m, id) {
             return data[id] })
     }
@@ -57,57 +67,60 @@ function (root, cassie) {
 
 
     //// SPECIALISED PROMISE FOR AJAX //////////////////////////////////////////
-    extend(AjaxVow, cassie.Promise.prototype, AjaxVow__proto__())
+    inherits(AjaxVow, Promise.prototype)
     function AjaxVow() {
         cassie.Promise.call(this)
     }
-    function AjaxVow__proto__() {
+    AjaxVow.prototype = function() {
         // The methods that will be exposed to the AjaxVow object:
-        return { update:      update
-               , log:         log
-               , delay:       delay
-               , error:       error
-               , setup:       setup
-               , loading:     loading
-               , loaded:      loaded
-               , interactive: interactive }
+        return extend( AjaxVow.prototype
+                     , { update:      update
+                       , log:         log
+                       , delay:       delay
+                       , error:       error
+                       , setup:       setup
+                       , loading:     loading
+                       , loaded:      loaded
+                       , interactive: interactive })
 
-        // Utilities to manipulate content -------------------------------------
         // Replaces the content of an element with the returned data
         function update(elm) {
-            function up(req, data) { el(elm).innerHTML = data }
-            return this.add(up)
+            function insert_response(req, data) { el(elm).innerHTML = data }
+
+            return this.add(insert_response)
         }
 
         // Inserts the returned data at the top of the element
-        function ins(promise, req, data, elm, cls) {
-            var c = create('li')
+        function insert(promise, req, data, elm, cls) {
+            var c = tag('li')
             elm         = el(elm)
             c.className = cls || ""
-            c.innerHTML = fmt('[{date}] {method} "{uri}" {status}: {data}'
-                             ,{ date:   date()
-                              , method: promise.method
-                              , uri:    promise.uri
-                              , status: req.status
-                              , data:   data })
+            c.innerHTML = format('[{date}] {method} "{uri}" {status}: {data}'
+                                , { date:   date()
+                                  , method: promise.method
+                                  , uri:    promise.uri
+                                  , status: req.status
+                                  , data:   data })
+
             elm.insertBefore(c, elm.firstChild)
         }
 
         // Logs a general information on the log stack
         function log(elm) {
             return this.add(function(req, data){
-                ins(this, req, data, elm) })
+                insert(this, req, data, elm) })
         }
 
         // Logs an error message on the log stack
         function error(elm) {
             return this.add(function(req, data){
-                ins(this, req, data, elm, 'error') })
+                insert(this, req, data, elm, 'error') })
         }
 
         // Calls a callback after some delay
         function delay(time, fn) {
             function call() { setTimeout(fn, time * 1000) }
+
             return this.add(call)
         }
         
@@ -116,7 +129,7 @@ function (root, cassie) {
         function loading(f)    { return this.add('loading',     f) } // 1
         function loaded(f)     { return this.add('loaded',      f) } // 2
         function interactive(f){ return this.add('interactive', f) } // 3
-    }
+    }()
 
     //// AJAX REQUEST WRAPPER /////////////////////////////////////////////////
     function ajax(method, uri, data) {
@@ -152,6 +165,7 @@ function (root, cassie) {
         req.send(data)
         return promise
     }
+
     // Just a wrapper for the general ajax request that assumes a GET
     function get(uri) {
         return ajax('GET', uri, null)
@@ -166,7 +180,8 @@ function (root, cassie) {
     // If the request was successfull, we also update the #world div
     // with the returned data.
     function hello() {
-        get('hello.txt').log('log-stack').delay(2, hello)
+        get('hello.txt').log('log-stack')
+                        .delay(2, hello)
                         .ok().update('world')
     }
     hello()
