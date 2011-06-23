@@ -71,11 +71,11 @@ void function (root) { var cassie, old
     // adding your own custom methods.
     //
     function Promise () {
-        this.callbacks   = {}
-        this.flush_queue = []
-        this.value       = null
-        this.timer       = null
-        this.defaultev   = 'done'
+        this.callbacks     = {}
+        this.flush_queue   = []
+        this.value         = null
+        this.timer         = null
+        this.default_event = 'done'
     }
     Promise.prototype = function() {
         return { add:         add
@@ -168,20 +168,14 @@ void function (root) { var cassie, old
         function add(event, callback) {
             if (typeof event == 'function') {
                 callback = event
-                event    = this.defaultev }
+                event    = this.default_event }
 
-            _add(this, event, callback)
+            this.default_event = event
+            if (this.value)  fire(this, event, callback)
+            else             add_callback(this, event, callback)
+
             return this
         }
-
-        function _add(promise, event, callback) {
-            promise.defaultev = event
-            if (promise.value)
-                fire(promise, event, callback)
-            else
-                add_callback(promise, event, callback)
-        }
-
         function fire(promise, event, callback) { var queue
             queue = get_queue(promise, event)
             if (callback && queue.flushed)
