@@ -247,7 +247,7 @@ void function (root) { var cassie, old
         //
         //   (error) ⇒ this
         //
-        // Fails to fulfill the promise, and calls all the `fail`
+        // Fails to fulfill the promise, and calls all the `failed`
         // callbacks passing the error as parameter.
         //
         // :param: {Object} error
@@ -256,7 +256,7 @@ void function (root) { var cassie, old
         //    * `done`
         //
         function fail() {
-            return this.flush('fail').done(arguments)
+            return this.flush('failed').done(arguments)
         }
 
 
@@ -320,7 +320,7 @@ void function (root) { var cassie, old
 
         ////// -Shortcuts for add(event[, callback]) ///////////////////////////
         function ok(fn)         { return this.add('ok',        fn) }
-        function failed(fn)     { return this.add('fail',      fn) }
+        function failed(fn)     { return this.add('failed',    fn) }
         function _timeouted(fn) { return this.add('timeouted', fn) }
         function _forgotten(fn) { return this.add('forgotten', fn) }
     }()
