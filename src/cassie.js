@@ -196,9 +196,9 @@ void function (root) { var cassie, old
         // `Promise`), and with any arguments that have been passed to
         // the promise when it was fulfilled.
         //
-        function flush(event) {
-            function next() { event = this.flush_queue.shift()      }
-            function queue(){ event && this.flush_queue.push(event) }
+        function flush(event) { var self = this
+            function next() { event = self.flush_queue.shift()      }
+            function queue(){ event && self.flush_queue.push(event) }
 
             if (!this.value)  queue()
             else
