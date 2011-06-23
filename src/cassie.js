@@ -197,20 +197,21 @@ void function (root) { var cassie, old
         // the promise when it was fulfilled.
         //
         function flush(event) {
-            function next_ev() { event = this.flush_queue.shift()      }
-            function queue_ev(){ event && this.flush_queue.push(event) }
+            function next() { event = this.flush_queue.shift()      }
+            function queue(){ event && this.flush_queue.push(event) }
 
-            if (!this.value)        queue_ev()
-            else while (next_ev())  flush_ev(this, event)
+            if (!this.value)  queue()
+            else
+                while (next())  flush_event(this, event)
 
             return this
         }
 
-        function flush_ev(promise, event) { var callbacks, current
-            function next_cb() { current = callbacks.shift() }
+        function flush_event(promise, event) { var callbacks, current
+            function next() { current = callbacks.shift() }
 
             callbacks = get_queue(this, event)
-            while (next_cb())  current.apply(promise, promise.value)
+            while (next())  current.apply(promise, promise.value)
 
             callbacks.flushed = true
         }
