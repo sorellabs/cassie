@@ -24,55 +24,70 @@
 /// Module cassie
 void function (root, require_p, exports_p) {
 
+  
+  //// -- Dependencies --------------------------------------------------------
   var boo = require_p?  require('boo') : root.boo
 
-    , slice = [].slice
 
-    , forgotten = {}
-    , timeouted = {}
+  
+  //// -- Aliases -------------------------------------------------------------
+  var slice = [].slice
 
-  //// -Interface testing
 
-  // Callable :: Obj → Bool
-  function callable_p(subject) {
-    return typeof subject == 'function' }
+  
+  //// -- Special constants ---------------------------------------------------
 
-  // add-callback :: Promise, Str, Fn → Maybe Num
-  function add_callback(promise, event, callback) {
-    return callback?  get_queue(promise, event).push(callback)
-    :                 null }
+  //// Data FORGOTTEN
+  // Used as a value for forgotten/cancelled promises.
+  //
+  // FORGOTTEN :: Object
+  var FORGOTTEN = {}
 
-  // get-queue :: Promise, Str → [Fn]
+  //// Data TIMEOUTED
+  // Used as a value for promises that failed with a timeout.
+  //
+  // TIMEOUTED :: Object
+  var TIMEOUTED = {}
+
+
+  
+  //// -- Helpers -------------------------------------------------------------
+
+  ///// Function get_queue
+  // Returns a list of callbacks registered for the event.
+  //
+  // If callbacks ain't defined for the event yet, it's also *initialised*
+  // to an empty array.
+  //
+  // get_queue! :: Promise*, String -> [Fun]
   function get_queue(promise, event) {
     return promise.callbacks[event]
     ||    (promise.callbacks[event] = []) }
 
-  // fire :: Promise, Str, Fn → Any
-  function fire(promise, event, callback) { var queue
-    queue = get_queue(promise, event)
-    if (callback && queue.flushed)
-      return callback.apply(promise, promise.value) }
 
-  // flush-event :: Promise, Str → Undef
-  function flush_event(promise, event) { var callbacks, current
-    callbacks = get_queue(promise, event)
-    while (next())
-      current.apply(promise, promise.value)
-    callbacks.flushed = true
+  
+  //// -- Public interface ----------------------------------------------------
 
-    function next(){ return current = callbacks.shift() }}
-
-
-  // Promise :: { "callbacks"     → {Str → [Fn]}
-  //            , "flush_queues"  → [Fn]
-  //            , "value"         → Any
-  //            , "timer"         → UNKNOW
-  //            , "default_event" → Str
+  ///// Object Promise
+  // A placeholder for a value that can be computed asynchronously.
+  //
+  // The `Promise' allows any code to define how they'll handle the value
+  // before the value is actually computed, by adding listeners to the
+  // various events that can be triggered once a promise is fulfilled.
+  //
+  // Promise :: { "callbacks"     -> { String -> [Fun] }
+  //            , "flush_queue"   -> [Fun]
+  //            , "value"         -> [Any]
+  //            , "timer"         -> TimerID
+  //            , "default_event" -> String
   //            }
-  var Promise = boo.Base.clone({
-    // init :: Obj → Obj
+  var Promise = boo.Base.derive({
+    ///// Function init
+    // Initialises an instance of a Promise.
+    //
+    // init! :: @this:Object* -> this
     init:
-    function init() {
+    function _init() {
       this.callbacks     = {}
       this.flush_queue   = []
       this.value         = null
@@ -80,36 +95,85 @@ void function (root, require_p, exports_p) {
       this.default_event = 'done'
       return this }
 
-    // add :: Str, Fn → this
-    // add :: Fn → this
-  , add:
-    function add(event, callback) {
-      if (callable_p(event)) {
-        callback = event
-        event    = this.default_event }
 
+    ///// Function on
+    // Adds a callback to the given event.
+    //
+    // on! :: @this:Promise*, String, Fun -> this
+  , on:
+    function _on(event, callback) {
       this.default_event = event
 
-      if (this.value)  fire(this, event, callback)
-      else             add_callback(this, event, callback)
-
-      return this }
-
-    // flush :: Str → this
-  , flush:
-    function flush(event) {
-      if (!this.value)  queue()
-      else
-        while (next())  flush_event(this, event)
+      if (this.value)  invoke_callback(this)
+      else             add_callback(this)
 
       return this
 
-      function next()  { return event = self.flush_queue.shift()      }
-      function queue() { return event && self.flush_queue.push(event) }}
+      // Invokes all the callbacks for the event
+      function invoke_callback(promise) {
+        var queue = get_queue(promise, event)
+        return callback && queue.flushed?  callback.apply(promise, promise.value)
+        :      /* otherwise */             null }
 
-    // done :: [Any] → this
+      // Adds the callback to the event
+      function add_callback(promise) {
+        return callback?  get_queue(promise, event).push(callback)
+        :                 null }}
+
+
+    ///// Function then
+    // Adds a callback to the active event queue.
+    //
+    // The active event queue is the one for which the last callback was
+    // registered, usually. It is controlled by the internal
+    // `default_event' property.
+    //
+    // then! :: @this:Promise*, Fun -> this
+  , then:
+    function _then(callback) {
+      return this.on(this.default_event, callback) }
+
+
+
+    ///// Function flush
+    // Fires all the callbacks for the event.
+    //
+    // If the promise hasn't been resolved yet, the callbacks are placed
+    // in a queue to be flushed once the Promise is fulfilled.
+    //
+    // flush :: @this:Promise*, String -> this
+  , flush:
+    function _flush(event) {
+      var self = this
+
+        !this.value?     queue_event(event)
+      : event?           flush_queue(event)
+      : /* otherwise */  flush_all()
+
+      return this
+
+
+      function queue_event(event) {
+        if (event) self.flush_queue.push(event) }
+
+      function flush_queue(event) {
+        var callbacks = get_queue(self, event)
+
+        callbacks.forEach(function(callback) {
+                            callback.apply(self, self.value) })
+        callbacks.length  = 0
+        callbacks.flushed = true }
+
+      function flush_all() {
+        self.flush_queue.forEach(flush_queue) }}
+
+
+    ///// Function done
+    // Fulfills the promise with the values given.
+    //
+    // done :: @this:Promise*, [Any] -> this
   , done:
-    function done(values) {
+    function _done(values) {
       if (!this.value) {
         this.clear_timer()
         this.flush('done')
@@ -118,84 +182,121 @@ void function (root, require_p, exports_p) {
 
       return this }
 
-    // fail :: Obj → this
+
+    ///// Function fail
+    // Fails to fulfill the promise.
+    //
+    // fail :: @this:Promise*, Any -> this
   , fail:
-    function fail(error) {
+    function _fail(error) {
       return this.flush('failed').done([error]) }
 
-    // bind :: Any... → this
+
+    ///// Function bind
+    // Successfully fulfills the promise.
+    //
+    // bind :: @this:Promise*, Any... -> this
   , bind:
-    function bind() {
+    function _bind() {
       return this.flush('ok').done(arguments) }
 
-    // timeout :: Num → this
+
+    ///// Function forget
+    // Cancels the promise.
+    //
+    // forget :: @this:Promise* -> this
+  , forget:
+    function _forget() {
+      return this.flush('forgotten').fail(FORGOTTEN) }
+
+
+    ///// Function timeout
+    // Schedules the promise to fail after a given number of seconds.
+    //
+    // timeout :: @this:Promise*, Number -> this
   , timeout:
-    function timeout(delay) {
+    function _timeout(delay) {
       this.clear_timer()
       this.timer = setTimeout(function() {
-        this.flush('timeouted').fail(timeouted)
+        this.flush('timeouted').fail(TIMEOUTED)
       }.bind(this), delay * 1000)
 
       return this }
 
-    // clear-timer :: → this
+
+    ///// Function clear_timer
+    // Stop the timer for the promise, if one was previously set by
+    // invoking `timeout'.
+    //
+    // clear_timer :: @this:Promise* -> this
   , clear_timer:
-    function clear_timer() {
+    function _clear_timer() {
       clearTimeout(this.timer)
+      this.timer = null
       return this }
 
-    // forget :: → this
-  , forget:
-    function forget() {
-      return this.flush('forgotten').fail(forgotten) }
 
-    // ok :: Fn → this
+    ///// Function ok
+    // Registers a callback for when the promise is successfully
+    // fulfilled.
+    //
+    // ok :: @this:Promise*, Fun -> this
   , ok:
-    function ok(fn) {
-      return this.add('ok', fn) }
+    function _ok(fun) {
+      return this.on('ok', fun) }
 
-    // failed :: Fn → this
+
+    ///// Function failed
+    // Registers a callback for when the promise fails to be fulfilled.
+    //
+    // failed :: @this:Promise*, Fun -> this
   , failed:
-    function failed(fn) {
-      return this.add('failed', fn) }
+    function _failed(fun) {
+      return this.on('failed', fun) }
 
-    // timeouted :: Fn → this
+
+    ///// Function timeouted
+    // Registers a callback for when the promise fails by timing out.
+    //
+    // timeouted :: @this:Promise*, Fun -> this
   , timeouted:
-    function _timeouted(fn) {
-      return this.add('timeouted', fn) }
+    function _timeouted(fun) {
+      return this.on('timeouted', fun) }
 
-    // forgotten :: Fn → this
+
+    ///// Function forgotten
+    // Registers a callback for when the promise fails by being
+    // cancelled.
+    //
+    // forgotten :: @this:Promise*, Fun -> this
   , forgotten:
-    function _forgotten(fn) {
-      return this.add('forgotten', fn) }
+    function _forgotten(fun) {
+      return this.on('forgotten', fun) }
   })
 
 
-
-  //// -Exports
+
+  
+  //// -- Exports -------------------------------------------------------------
   var old, cassie
   if (!exports_p) {
     old    = root.cassie
     cassie = root.cassie = {}
 
-    // make-local :: → cassie
+    // make-local! :: () -> cassie
     cassie.make_local = function() {
       root.cassie = old
       return cassie }}
   else
     cassie = exports
 
-
-  cassie.Promise   = Promise
-  cassie.forgotten = forgotten
-  cassie.timeouted = timeouted
 
-  cassie.internals = { callable_p:   callable_p
-                     , add_callback: add_callback
-                     , get_queue:    get_queue
-                     , fire:         fire
-                     , flush_event:  flush_event
-                     }
+  cassie.Promise   = Promise
+  cassie.forgotten = FORGOTTEN
+  cassie.timeouted = TIMEOUTED
+
+  cassie.internals = { get_queue: get_queue }
+
 
 // --
 }

@@ -13,7 +13,7 @@ void function (root, cassie) {
   , slice   = Array.prototype.slice
   , keys    = Object.keys
   , Promise = cassie.Promise
-  
+
   , state_map = [ 'setup'
                 , 'loading'
                 , 'loaded'
@@ -46,7 +46,7 @@ void function (root, cassie) {
     return str.replace(/{(.+?)}/g, function(m, id) {
       return data[id] })
   }
-        
+
   // Inserts the returned data at the top of the element
   function insert(promise, req, data, elm, cls) { var c
     c           = tag('li')
@@ -65,26 +65,26 @@ void function (root, cassie) {
 
 
   //// SPECIALISED PROMISE FOR AJAX
-  var AjaxVow = Promise.clone({
+  var AjaxVow = Promise.derive({
     // Replaces the content of an element with the returned data
     update:
     function update(elm) {
       function insert_response(req, data) { el(elm).innerHTML = data }
-      
-      return this.add(insert_response)
+
+      return this.then(insert_response)
     },
 
     // Logs a general information on the log stack
     log:
     function log(elm) {
-      return this.add(function(req, data){
+      return this.then(function(req, data){
         insert(this, req, data, elm) })
     },
 
     // Logs an error message on the log stack
     error:
     function error(elm) {
-      return this.add(function(req, data){
+      return this.then(function(req, data){
         insert(this, req, data, elm, 'error') })
     },
 
@@ -93,27 +93,27 @@ void function (root, cassie) {
     function delay(time, fn) {
       function call() { setTimeout(fn, time * 1000) }
 
-      return this.add(call)
+      return this.then(call)
     },
-        
+
     // Callbacks for Ajax's states                               readyState
     setup:
-    function setup(f)      { return this.add('setup',       f) }, // 0
+    function setup(f)      { return this.on('setup',       f) }, // 0
 
     loading:
-    function loading(f)    { return this.add('loading',     f) }, // 1
+    function loading(f)    { return this.on('loading',     f) }, // 1
 
     loaded:
-    function loaded(f)     { return this.add('loaded',      f) }, // 2
+    function loaded(f)     { return this.on('loaded',      f) }, // 2
 
     interactive:
-    function interactive(f){ return this.add('interactive', f) }  // 3
+    function interactive(f){ return this.on('interactive', f) }  // 3
   })
 
   //// AJAX REQUEST WRAPPER
   function ajax(method, uri, data) {
     var req   = new XMLHttpRequest
-    , promise = AjaxVow.copy()
+    , promise = AjaxVow.make()
     , success = /0|2\d{2}/
 
     // Remember which method and uri we used, so we can use them on
@@ -128,7 +128,7 @@ void function (root, cassie) {
       var res  = req.responseText
       , state  = req.readyState
       , status = req.status
-      
+
       // Flushes the curent readyState's queue of callbacks
       promise.flush(state_map[state])
 
@@ -137,7 +137,7 @@ void function (root, cassie) {
       // promise with an error.
       if (state == 4)
         success.test(status)?  promise.bind(req, res)
-                            :  promise.fail(req, res) }
+                            :  promise.fail(Error('Ooops, something went wrong.')) }
 
     // Send the request to the server
     req.send(data)
@@ -148,8 +148,8 @@ void function (root, cassie) {
   function get(uri) {
     return ajax('GET', uri, null)
   }
-  
-  
+
+
   //// APPLICATION CODE //////////////////////////////////////////////////////
   // Requests the url `hello.txt'. After the request has been
   // successfully completed, the data should be logged in the
@@ -167,7 +167,7 @@ void function (root, cassie) {
   // Requests the url `nu-uh', and if shit happens, logs the error
   // message in the log-stack
   get('nu-uh').failed().error('log-stack')
-  
+
   // Requests `hello.txt' and updates the log-stack with the data, if
   // the request was successful.
   //
