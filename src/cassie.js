@@ -25,7 +25,7 @@
 void function (root, require_p, exports_p) {
 
   var boo = require_p?  require('boo') : root.boo
-    
+
     , slice = [].slice
 
     , forgotten = {}
@@ -37,8 +37,8 @@ void function (root, require_p, exports_p) {
   function callable_p(subject) {
     return typeof subject == 'function' }
 
-  // add-callback :: Promise, Str, Fn → Num
-  function add_callback(proimse, event, callback) {
+  // add-callback :: Promise, Str, Fn → Maybe Num
+  function add_callback(promise, event, callback) {
     return callback?  get_queue(promise, event).push(callback)
     :                 null }
 
@@ -51,7 +51,7 @@ void function (root, require_p, exports_p) {
   function fire(promise, event, callback) { var queue
     queue = get_queue(promise, event)
     if (callback && queue.flushed)
-      return callback.apply(promise, promise,value) }
+      return callback.apply(promise, promise.value) }
 
   // flush-event :: Promise, Str → Undef
   function flush_event(promise, event) { var callbacks, current
@@ -62,7 +62,7 @@ void function (root, require_p, exports_p) {
 
     function next(){ return current = callbacks.shift() }}
 
-  
+
   // Promise :: { "callbacks"     → {Str → [Fn]}
   //            , "flush_queues"  → [Fn]
   //            , "value"         → Any
@@ -169,7 +169,7 @@ void function (root, require_p, exports_p) {
     function _forgotten(fn) {
       return this.add('forgotten', fn) }
   })
-    
+
 
 
   //// -Exports
