@@ -176,4 +176,4 @@ void function (root, cassie) {
   get('hello.txt').ok().update('log-stack')
                   .forget()
 
-}(this, cassie)
+}(this, require('cassie'))
