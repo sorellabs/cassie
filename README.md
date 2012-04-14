@@ -76,6 +76,7 @@ For **Browsers**, you can either use the generated modules (which are in
 the `build` folder):
 
     <script src="/path/to/browserify.js"></script>
+    <script src="/path/to/boo.js"></script>
     <script src="/path/to/cassie.js"></script>
     <script>
       var cassie = require('cassie')
