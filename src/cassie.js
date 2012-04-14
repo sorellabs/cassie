@@ -34,22 +34,6 @@ var slice = [].slice
 
 
 
-//// -- Special constants ---------------------------------------------------
-
-//// Data FORGOTTEN
-// Used as a value for forgotten/cancelled promises.
-//
-// FORGOTTEN :: Object
-var FORGOTTEN = {}
-
-//// Data TIMEOUTED
-// Used as a value for promises that failed with a timeout.
-//
-// TIMEOUTED :: Object
-var TIMEOUTED = {}
-
-
-
 //// -- Helpers -------------------------------------------------------------
 
 ///// Function get_queue
@@ -62,6 +46,14 @@ var TIMEOUTED = {}
 function get_queue(promise, event) {
   return promise.callbacks[event]
   ||    (promise.callbacks[event] = []) }
+
+
+///// Function register
+// Creates a function that registers handlers for the given event.
+//
+// register! :: String -> @this:Promise*, Fun -> this
+function register(event) { return function(fun) {
+  return this.on(event, fun) }}
 
 
 
@@ -209,7 +201,7 @@ var Promise = Base.derive({
   // forget :: @this:Promise* -> this
 , forget:
   function _forget() {
-    return this.flush('forgotten').fail(FORGOTTEN) }
+    return this.flush('forgotten').fail('forgotten') }
 
 
   ///// Function timeout
@@ -220,7 +212,7 @@ var Promise = Base.derive({
   function _timeout(delay) {
     this.clear_timer()
     this.timer = setTimeout( function(){ this.flush('timeouted')
-                                             .fail(TIMEOUTED)    }.bind(this)
+                                             .fail('timeouted')  }.bind(this)
                            , delay * 1000)
 
     return this }
@@ -243,44 +235,32 @@ var Promise = Base.derive({
   // fulfilled.
   //
   // ok :: @this:Promise*, Fun -> this
-, ok:
-  function _ok(fun) {
-    return this.on('ok', fun) }
-
+, ok: register('ok')
 
   ///// Function failed
   // Registers a callback for when the promise fails to be fulfilled.
   //
   // failed :: @this:Promise*, Fun -> this
-, failed:
-  function _failed(fun) {
-    return this.on('failed', fun) }
-
+, failed: register('failed')
 
   ///// Function timeouted
   // Registers a callback for when the promise fails by timing out.
   //
   // timeouted :: @this:Promise*, Fun -> this
-, timeouted:
-  function _timeouted(fun) {
-    return this.on('timeouted', fun) }
-
+, timeouted: register('timeouted')
 
   ///// Function forgotten
   // Registers a callback for when the promise fails by being
   // cancelled.
   //
   // forgotten :: @this:Promise*, Fun -> this
-, forgotten:
-  function _forgotten(fun) {
-    return this.on('forgotten', fun) }
+, forgotten: register('forgotten')
 })
 
 
 
 //// -- Exports ---------------------------------------------------------------
 module.exports = { Promise   : Promise
-                 , FORGOTTEN : FORGOTTEN
-                 , TIMEOUTED : TIMEOUTED
+                 , register  : register
 
                  , internals : { get_queue: get_queue }}
