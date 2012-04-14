@@ -3,3 +3,4 @@ ignore
 doctrees
 _sources
 node_modules
+src-cov
