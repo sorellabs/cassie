@@ -180,10 +180,10 @@ var Promise = Base.derive({
   ///// Function fail
   // Fails to fulfill the promise.
   //
-  // fail :: @this:Promise*, Any -> this
+  // fail :: @this:Promise*, Any... -> this
 , fail:
-  function _fail(error) {
-    return this.flush('failed').done([error]) }
+  function _fail() {
+    return this.flush('failed').done(arguments) }
 
 
   ///// Function bind
