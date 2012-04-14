@@ -2,9 +2,10 @@ var expect = require('expect.js')
 
 describe('{} cassie', function() {
   var proto      = Object.getPrototypeOf
-  var coverage_p = process.env && process.env.MOCHA_TEST_ENV
-  var cassie     = coverage_p?      require('../src-cov/cassie')
-                 : /* otherwise */  require('../src/cassie')
+  var coverage_p = process.env && process.env.MOCHA_TEST_COV
+  var cov_lib    = '../src-cov/cassie'
+  var cassie     = coverage_p?      require(cov_lib)
+                 : /* otherwise */  require('cassie')
 
   var promise = cassie.Promise.make.bind(cassie.Promise)
   var f = function() { evoke.push('f') }
