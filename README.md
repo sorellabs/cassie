@@ -91,6 +91,9 @@ Then reference that script in your webpage:
     <script src="/path/to/all.js"></script>
 
 
+[node.js]: http://nodejs.org/
+[npm]: http://npmjs.org/
+
 
 Downloading
 -----------
