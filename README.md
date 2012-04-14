@@ -38,7 +38,7 @@ their own manipulations to the object as well::
     }
     var req = log_it(ajax.get('data.json').timeout(10))
 
-[Future]: http://en.wikipedia.org/wiki/Futures_and_promises
+[Promise]: http://en.wikipedia.org/wiki/Futures_and_promises
 
 
 Requirements and Supported Platforms
