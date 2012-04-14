@@ -1,1 +1,0 @@
-/home/quildreen/work/boo/src/boo.js
