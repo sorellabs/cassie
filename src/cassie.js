@@ -113,16 +113,27 @@ var Promise = Base.derive({
 
 
   ///// Function then
-  // Adds a callback to the active event queue.
+  // Creates a new promise that transforms the bound value of the
+  // original promise by the given functor.
   //
-  // The active event queue is the one for which the last callback was
-  // registered, usually. It is controlled by the internal
-  // `default_event' property.
+  // The new promise has its own callback mappings but share the flush
+  // queue with the original promise. That is, calling `flush' in the
+  // new promise will flush the event queue in the original promise.
   //
-  // then! :: @this:Promise*, Fun -> this
+  // then! :: @this:Promise*, Fun -> Promise
 , then:
   function _then(callback) {
-    return this.on(this.default_event, callback) }
+    var origin  = this
+    var promise = this.make()
+    promise.flush_queue = origin.flush_queue
+
+    this.ok(    function(){ promise.bind(transform(arguments)) })
+        .failed(function(){ promise.fail(transform(arguments)) })
+
+    return promise
+
+    function transform(xs) {
+      return callback.apply(promise, xs) }}
 
 
 
