@@ -29,6 +29,39 @@ describe('{} cassie', function() {
     })
   })
 
+
+  describe('λ merge', function() {
+    it('Should make a promise from dependencies.', function() {
+      var p1 = promise(), p2 = promise(), p3 = promise()
+      var p = cassie.merge(p1, p2, p3)
+      expect(cassie.Promise.isPrototypeOf(p)).to.be.ok()
+      expect(proto(p).dependencies).to.eql([p1, p2, p3])
+    })
+    it('Should fail when any dependency fail.', function() {
+      var p1 = promise(), p2 = promise(), p3 = promise()
+      var p = cassie.merge(p1, p2, p3)
+      p.ok(f).failed(g).on('done', function(x){ expect(x).to.eql('foo') })
+      p1.bind('ok')
+      p2.fail('foo')
+      p3.bind('yeah')
+
+      expect(evoke).to.eql(['g'])
+    })
+    it('Should succeed when all dependencies succeed.', function() {
+      var p1 = promise(), p2 = promise(), p3 = promise()
+      var p = cassie.merge(p1, p2, p3)
+      p.ok(f).failed(g).on('done', function(x, y, z){ expect(x).to.eql(['ok'])
+                                                      expect(y).to.eql(['foo'])
+                                                      expect(z).to.eql(['yeah']) })
+      p1.bind('ok')
+      p2.bind('foo')
+      p3.bind('yeah')
+
+      expect(evoke).to.eql(['f'])
+    })
+  })
+
+
   describe('{} Promise', function() {
     describe('λ init', function() {
       it('Should initialize a new promise instance.', function() {
@@ -37,17 +70,14 @@ describe('{} cassie', function() {
       it('Should match the Promise interface.', function() {
         var p = promise()
         expect(p.callbacks).to.be.an('object')
-        expect(p.flush_queue).to.be.an('array')
-        expect(p.default_event).to.be.a('string')
+        expect(p.flush_queue).to.be.an('object')
+        expect(p.flush_queue.any).to.be.an('array')
+        expect(p.flush_queue.ok).to.be.an('array')
+        expect(p.flush_queue.failed).to.be.an('array')
       })
     })
 
     describe('λ on', function() {
-      it('Should set the default event to the one passed in the function.', function() {
-        var p = promise().on('foo', f)
-
-        expect(p.default_event).to.be('foo')
-      })
       it('Should invoke the callback if the event queue has been flushed.', function() {
         var p = promise()
         p.callbacks.foo = []
@@ -83,7 +113,15 @@ describe('{} cassie', function() {
       it('Should transform the bound value by the given functor.', function() {
         var p = promise()
         p.then(function(x){ return x * x })
-         .ok(function(x){ expect(x).to.be(4) })
+         .then(function(x){ return x + 1 })
+         .ok(function(x){ expect(x).to.be(5) })
+        p.bind(2)
+      })
+      it('Given an uncurried transformer, should bind values as variadic.', function() {
+        var p = promise()
+        p.then(function(x){ return cassie.uncurried([x + 1, x - 1]) })
+         .ok(function(inc, dec){ expect(inc).to.be(3)
+                                 expect(dec).to.be(1) })
         p.bind(2)
       })
       it('Should flush all the queues flushed by the origin.', function() {
@@ -96,23 +134,17 @@ describe('{} cassie', function() {
         var p = promise()
         expect(p.then().callbacks).to.not.be(p.callbacks)
       })
-      it('Should share the flush queue with the original promise.', function() {
-        
-      })
-/*
-      it('Should use the default_event queue.', function() {
-        var p = promise().on('foo', f).then(g)
-
-        expect(p.callbacks.foo).to.eql([f, g])
-      })
-*/
     })
 
     describe('λ flush', function() {
       it('Should queue if the promise hasn\'t been resolved.', function() {
         var p = promise().flush('ok')
+                         .flush('mo', 'ok')
+                         .flush('ko', 'failed')
 
-        expect(p.flush_queue).to.eql(['ok'])
+        expect(p.flush_queue.any).to.eql(['ok'])
+        expect(p.flush_queue.ok).to.eql(['mo'])
+        expect(p.flush_queue.failed).to.eql(['ko'])
       })
       it('Should invoke all the callbacks in the queue if an event is given.', function() {
         var p = promise().on('foo', f).on('bar', g).bind().flush('foo')
@@ -225,6 +257,32 @@ describe('{} cassie', function() {
                                  expect(evoke).to.eql(['g'])
                                  n() }
                   , 1500 )
+      })
+    })
+
+    describe('λ wait', function() {
+      it('Should defer flushing until all dependencies are realised.', function() {
+        var p = promise().ok(f).ok(function(x){ expect(x).to.be(2) })
+        var p2 = promise()
+        p.wait(p2)
+        p.bind(2)
+
+        expect(evoke).to.eql([])
+
+        p2.bind(3)
+        expect(evoke).to.eql(['f'])
+      })
+      it('Should fail as soon as any dependency fails.', function() {
+        var p = promise().ok(f)
+                         .failed(g)
+                         .on('done', function(x){ expect(x).to.be('foo') })
+        var p2 = promise(), p3 = promise()
+        p.wait(p2, p3)
+        p.bind(2)
+        p2.fail('foo')
+        p3.bind('bar')
+
+        expect(evoke).to.eql(['g'])
       })
     })
   })
