@@ -380,5 +380,6 @@ module.exports = { Promise   : Promise
                  , merge     : merge
                  , uncurried : uncurried
                  , resolved_p : resolved_p
+                 , as_value : as_value
 
                  , internals : { get_queue: get_queue }}
