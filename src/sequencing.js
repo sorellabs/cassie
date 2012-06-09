@@ -55,6 +55,7 @@ module.exports = function sequencing() {
     if (!action)  return
 
     var p = action()
-    p.ok(do_next).ok    (promise.bind.bind(promise))
-                 .failed(promise.fail.bind(promise))
+    p.ok(do_next).ok(promise.bind.bind(promise))
+
+    dependencies.push(p)
     promise.wait(p) }}
