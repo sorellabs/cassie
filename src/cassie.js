@@ -364,8 +364,7 @@ function merge() {
          .on('dependency-failed', function(){ error = arguments })
 
   dependencies.forEach(function(dep) {
-                         dep.ok    (promise.bind.bind(promise))
-                            .failed(promise.fail.bind(promise)) })
+                         dep.ok(promise.bind.bind(promise)) })
 
 
   return promise.then(function() {
