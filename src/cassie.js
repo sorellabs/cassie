@@ -316,7 +316,7 @@ var Promise = Base.derive({
   // invoking `timeout'.
   //
   // clear_timer :: @this:Promise* -> this
-, clear_timer:
+, clearTimer:
   function _clear_timer() {
     clearTimeout(this.timer)
     this.timer = null
@@ -349,6 +349,7 @@ var Promise = Base.derive({
   // forgotten :: @this:Promise*, Fun -> this
 , forgotten: register('forgotten')
 })
+Promise.clear_timer = Promise.clearTimer
 
 
 ///// Function merge
@@ -374,11 +375,13 @@ function merge() {
 
 
 //// -- Exports ---------------------------------------------------------------
-module.exports = { Promise   : Promise
-                 , register  : register
-                 , merge     : merge
-                 , uncurried : uncurried
+module.exports = { Promise    : Promise
+                 , register   : register
+                 , merge      : merge
+                 , uncurried  : uncurried
                  , resolved_p : resolved_p
-                 , as_value : as_value
+                 , resolvedP  : resolved_p
+                 , as_value   : as_value
+                 , asValue    : as_value
 
                  , internals : { get_queue: get_queue }}
