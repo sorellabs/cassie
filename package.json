@@ -23,7 +23,7 @@
   },
   "licence": "MIT/X11",
   "dependencies": {
-    "boo": "~1.2.0",
+    "boo": "~1.2.0"
   },
   "devDependencies": {
     "browserify": "*",
