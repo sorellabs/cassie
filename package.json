@@ -2,7 +2,7 @@
   "author": "Quildreen Motta <quildreen@gmail.com> (http://killdream.github.com/)",
   "name": "cassie",
   "description": "Simple Promise library for JS.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "homepage": "http://killdream.github.com/cassie",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   },
   "licence": "MIT/X11",
   "dependencies": {
-    "boo": "~1.2.0"
+    "boo": "~1"
   },
   "devDependencies": {
     "browserify": "*",
