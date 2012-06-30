@@ -24,12 +24,12 @@
   "licence": "MIT/X11",
   "dependencies": {
     "boo": "~1.2.0",
-    "noire": "~0.2.1",
-    "sinon": "~1.3.4"
   },
   "devDependencies": {
-    "browserify": "~1.10.7",
-    "mocha": "~1.0.1",
-    "expect.js": "~0.1.2"
+    "browserify": "*",
+    "mocha": "*",
+    "expect.js": "*",
+    "noire": "*",
+    "sinon": "*"
   }
 }
